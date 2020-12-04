@@ -30,19 +30,18 @@ def validate(passport):
 
 
 def do_it(filename):
-    with open(filename) as f:
-        lines = [line.strip() for line in f.readlines()]
     result = 0
     passport = dict()
-    for line in lines:
-        if len(line) > 0:
-            tokens = iter([token for pair in line.split() for token in pair.split(':')])
-            line_batch = dict(zip(tokens, tokens))
-            passport.update(line_batch)
-        else:
-            print(passport)
-            result += validate(passport)
-            passport = dict()
+    with open(filename) as f:
+        for line in [line.strip() for line in f.readlines()]:
+            if len(line) > 0:
+                tokens = iter([token for pair in line.split() for token in pair.split(':')])
+                line_batch = dict(zip(tokens, tokens))
+                passport.update(line_batch)
+            else:
+                # print(passport)
+                result += validate(passport)
+                passport = dict()
 
     return result
 
@@ -51,4 +50,4 @@ if __name__ == '__main__':
     output = do_it('input.txt')
     print(f'Result: {output}')
 
-# Result: 200
+# Result: 116
