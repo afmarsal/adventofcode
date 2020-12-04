@@ -14,16 +14,6 @@ def read_ints_from_file(filename):
 
 
 def read_regex_from_file(filename, regex):
-    prog = re.compile(regex)
+    regex = re.compile(regex)
     with open(filename) as f:
-        result = []
-        content = f.readlines()
-        for line in content:
-            if len(line) == 0:
-                continue
-            matched = prog.fullmatch(line.strip())
-            if not matched:
-                print(f'Line {line} does not match!')
-                raise Exception
-            result.append(matched)
-        return result
+        return [regex.fullmatch(line.strip()) for line in f.readlines() if len(line.strip()) > 0]
