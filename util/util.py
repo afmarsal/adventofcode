@@ -17,3 +17,8 @@ def read_regex_from_file(filename, regex):
     regex = re.compile(regex)
     with open(filename) as f:
         return [regex.fullmatch(line.strip()) for line in f.readlines() if len(line.strip()) > 0]
+
+
+def lines(filename):
+    with open(filename) as f:
+        return [line.strip() for line in f.readlines() if len(line.strip()) > 0]
