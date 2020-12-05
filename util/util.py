@@ -2,23 +2,14 @@ import re
 
 
 def read_ints_from_file(filename):
-    with open(filename) as f:
-        result = []
-        content = f.readlines()
-        for line in content:
-            if len(line) == 0:
-                continue
-            i = int(line.strip())
-            result.append(i)
-        return result
+    return [int(line) for line in lines(filename)]
 
 
 def read_regex_from_file(filename, regex):
     regex = re.compile(regex)
-    with open(filename) as f:
-        return [regex.fullmatch(line.strip()) for line in f.readlines() if len(line.strip()) > 0]
+    return [regex.fullmatch(line.strip()) for line in lines(filename)]
 
 
-def lines(filename):
+def lines(filename, include_empty = False):
     with open(filename) as f:
-        return [line.strip() for line in f.readlines() if len(line.strip()) > 0]
+        return [line.strip() for line in f.readlines() if include_empty or len(line.strip()) > 0]

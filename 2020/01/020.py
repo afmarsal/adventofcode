@@ -16,7 +16,7 @@ def do_it(filename):
 
 
 if __name__ == '__main__':
-    result = do_it('input.txt')
+    result = do_it('input01.txt')
     print(f'Result: {result}')
 
 # Result: 193598720

@@ -7,7 +7,7 @@ def do_it(filename):
 
 
 if __name__ == '__main__':
-    output = do_it('input.txt')
+    output = do_it('input031.txt')
     print(f'Result: {output}')
 
 # Result: 178

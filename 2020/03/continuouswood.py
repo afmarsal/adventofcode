@@ -1,3 +1,4 @@
+import util
 
 
 class ContinuousWood:
@@ -36,5 +37,4 @@ class ContinuousWood:
 
     @staticmethod
     def parse(filename):
-        with open(filename) as f:
-            return ContinuousWood([line.strip() for line in f.readlines() if len(line) > 0])
+        return ContinuousWood(util.lines(filename))
