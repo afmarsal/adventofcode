@@ -10,6 +10,9 @@ def read_regex_from_file(filename, regex):
     return [regex.fullmatch(line.strip()) for line in lines(filename)]
 
 
-def lines(filename, include_empty = False):
+def lines(filename, include_empty=False):
     with open(filename) as f:
-        return [line.strip() for line in f.readlines() if include_empty or len(line.strip()) > 0]
+        lines = [line.strip() for line in f.readlines() if include_empty or len(line.strip()) > 0]
+        if include_empty:
+            lines.append('')
+    return lines
