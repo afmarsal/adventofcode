@@ -16,3 +16,16 @@ def lines(filename, include_empty=False):
         if include_empty:
             lines.append('')
     return lines
+
+def grouped_lines(filename):
+    all_lines = lines(filename, True)
+    result = []
+    group = []
+    for line in all_lines:
+        if len(line) > 0:
+            group.append(line)
+        else:
+            result.append(group)
+            group = []
+    return result
+
