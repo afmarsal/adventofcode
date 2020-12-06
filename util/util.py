@@ -1,4 +1,5 @@
 import re
+import itertools
 
 
 def read_ints_from_file(filename):
@@ -18,14 +19,7 @@ def lines(filename, include_empty=False):
     return lines
 
 def grouped_lines(filename):
-    all_lines = lines(filename, True)
-    result = []
-    group = []
-    for line in all_lines:
-        if len(line) > 0:
-            group.append(line)
-        else:
-            result.append(group)
-            group = []
-    return result
+    with open(filename) as f:
+        all_lines = [line.strip() for line in f.readlines()]
+        return (list(v) for k, v in itertools.groupby(all_lines, lambda l: l == '') if not k)
 
