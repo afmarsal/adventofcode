@@ -31,19 +31,14 @@ def validate(passport):
 
 
 def do_it(filename):
-    result = 0
-    passport = dict()
-    for line in util.lines(filename, True):
-        if len(line) > 0:
-            tokens = iter([token for pair in line.split() for token in pair.split(':')])
-            line_batch = dict(zip(tokens, tokens))
-            passport.update(line_batch)
-        else:
-            # print(passport)
-            result += validate(passport)
-            passport = dict()
+    def to_passport(group):
+        tokens = (token for pair in ' '.join(group).split() for token in pair.split(':'))
+        passport = dict(zip(tokens, tokens))
+        if 'cid' in passport:
+            del passport['cid']
+        return passport
 
-    return result
+    return sum([validate(to_passport(group)) for group in util.grouped_lines(filename)])
 
 
 if __name__ == '__main__':
