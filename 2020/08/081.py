@@ -29,4 +29,4 @@ if __name__ == '__main__':
     output = do_it('input81.txt')
     print(f'Result: {output}')
 
-# Result: 337
+# Result: 1709

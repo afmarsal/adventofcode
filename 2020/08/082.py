@@ -29,12 +29,9 @@ def parse_and_run(program):
 def replace_nop_jmp(program, pos):
     copy = deepcopy(program)
     for i in range(pos, len(copy)):
-        print(f'Checking {i}, {copy[i]}')
         if copy[i][0] in ("nop", "jmp"):
             copy[i][0] = "jmp" if copy[i][0] == "nop" else "nop"
-            print(f'Return {i+1}, {copy}')
             return copy, i + 1
-    print("jmp|nop not found!")
 
 
 def do_it(filename):
@@ -52,4 +49,4 @@ if __name__ == '__main__':
     output = do_it('input81.txt')
     print(f'Result: {output}')
 
-# Result: 337
+# Result: 1976

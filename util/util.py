@@ -3,7 +3,7 @@ import itertools
 
 
 def read_ints_from_file(filename):
-    return (int(line) for line in lines(filename))
+    return list(map(int, f))
 
 
 def read_regex_from_file(filename, regex):
@@ -13,7 +13,7 @@ def read_regex_from_file(filename, regex):
 
 def lines(filename):
     with open(filename) as f:
-        return (line.strip() for line in f.readlines() if len(line.strip()) > 0)
+        return list(map(str.strip, f))
 
 
 def grouped_lines(filename):
