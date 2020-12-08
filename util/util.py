@@ -18,6 +18,5 @@ def lines(filename):
 
 def grouped_lines(filename):
     with open(filename) as f:
-        all_lines = [line.strip() for line in f.readlines()]
-        return (list(v) for k, v in itertools.groupby(all_lines, lambda l: l == '') if not k)
+        return (list(v) for k, v in itertools.groupby([l.strip() for l in f], lambda l: l == '') if not k)
 
