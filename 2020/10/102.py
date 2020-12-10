@@ -7,11 +7,7 @@ class Graph:
         self.precalc = {}
 
     def next_nodes(self, idx):
-        next_idx = []
-        for i in range(idx + 1, min(idx + 4, len(self.ints))):
-            if self.ints[i] - self.ints[idx] <= 3:
-                next_idx.append(i)
-        return next_idx
+        return [i for i in range(idx + 1, min(idx + 4, len(self.ints))) if self.ints[i] - self.ints[idx] <= 3]
 
     def count_paths(self, idx0, curr_paths):
         if idx0 == len(self.ints) - 1:
