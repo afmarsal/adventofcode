@@ -9,16 +9,15 @@ class Graph:
     def next_nodes(self, idx):
         return [i for i in range(idx + 1, min(idx + 4, len(self.ints))) if self.ints[i] - self.ints[idx] <= 3]
 
-    def count_paths(self, idx0, curr_paths):
-        if idx0 == len(self.ints) - 1:
+    def count_paths(self, idx, curr_paths):
+        if idx == len(self.ints) - 1:
             return curr_paths + 1
 
-        if idx0 in self.precalc:
-            return self.precalc[idx0]
-        for n in self.next_nodes(idx0):
-            child_paths = self.count_paths(n, curr_paths)
-            self.precalc[n] = child_paths
-            curr_paths += self.precalc[n]
+        if idx in self.precalc:
+            return self.precalc[idx]
+        for next_node in self.next_nodes(idx):
+            self.precalc[next_node] = self.count_paths(next_node, curr_paths)
+            curr_paths += self.precalc[next_node]
         return curr_paths
 
 
