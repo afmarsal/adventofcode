@@ -5,18 +5,6 @@ INPUT0 = '090.txt', 14, 127
 INPUT1 = '091.txt', 528, 22477624
 
 
-def do_it(filename):
-    with open(filename) as f:
-        lines = list(map(int, f))
-    for i in range(WS + 1, len(lines)):
-        s = set(lines[i - WS:i])
-        for j in s:
-            if (lines[i] - j) in s:
-                break
-        else:
-            return i, lines[i]
-
-
 def do_it(input):
     with open(input[0]) as f:
         lines = list(map(int, f))
