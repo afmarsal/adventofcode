@@ -1,24 +1,20 @@
 import copy
 
 
+def next_coord(pos, delta, curr_grid):
+    if 0 <= pos[0] + delta[0] < len(curr_grid) and 0 <= pos[1] + delta[1] < len(curr_grid[0]):
+        return pos[0] + delta[0], pos[1] + delta[1]
+    else:
+        return -1, -1
+
+
 def adj_occupied(y, x, curr_grid):
+    deltas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     result = 0
-    if y - 1 >= 0:
-        if x - 1 >= 0:
-            result += curr_grid[y - 1][x - 1] == '#'
-        if x + 1 < len(curr_grid[y]):
-            result += curr_grid[y - 1][x + 1] == '#'
-        result += curr_grid[y - 1][x] == '#'
-    if x - 1 >= 0:
-        result += curr_grid[y][x - 1] == '#'
-    if x + 1 < len(curr_grid[y]):
-        result += curr_grid[y][x + 1] == '#'
-    if y + 1 < len(curr_grid):
-        if x - 1 >= 0:
-            result += curr_grid[y + 1][x - 1] == '#'
-        if x + 1 < len(curr_grid[y]):
-            result += curr_grid[y + 1][x + 1] == '#'
-        result += curr_grid[y + 1][x] == '#'
+    for delta in deltas:
+        next_y, next_x = next_coord((y, x), delta, curr_grid)
+        if next_y >= 0:
+            result += curr_grid[next_y][next_x] == '#'
     return result
 
 
