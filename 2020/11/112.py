@@ -12,7 +12,7 @@ def adj_occupied(y, x, curr_grid):
     deltas = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
     result = 0
     for delta in deltas:
-        next_y, ne
+        next_y, next_x = y, x
         while next_y >= 0:
             next_y, next_x = next_coord((next_y, next_x), delta, curr_grid)
             if next_y >= 0:
@@ -68,4 +68,4 @@ if __name__ == '__main__':
     output = do_it('input1.txt')
     print(f'Result: {output}')
 
-# Result: 2412
+# Result: 2176
