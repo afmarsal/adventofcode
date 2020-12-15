@@ -8,7 +8,7 @@ INPUT_0 = '5,2,8,16,18,0,1'
 
 def do_it(input, times):
     num_list = list(map(int, input.split(',')))
-    # { number: last_turn]
+    # {number: last_turn}
     numbers = {v: i + 1 for i, v in enumerate(num_list)}
 
     spoken = num_list[len(num_list) - 1]
