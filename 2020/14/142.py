@@ -30,7 +30,7 @@ def do_it(filename):
             m = regex.fullmatch(line)
             for mem_add in generate_address(mask_str, 0, [int(m[1])], mask1):
                 memory[mem_add] = int(m[2])
-    print(memory)
+    # print(memory)
     return sum(memory.values())
 
 
