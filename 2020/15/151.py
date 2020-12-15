@@ -12,15 +12,9 @@ def do_it(input, times):
     numbers = {v: i + 1 for i, v in enumerate(num_list)}
 
     spoken = num_list[len(num_list) - 1]
-    initial_turn = len(numbers) + 1
-
-    for turn in range(initial_turn, times + 1):
+    for turn in range(len(numbers) + 1, times + 1):
         prev_spoken = spoken
-        if spoken in numbers:
-            spoken = (turn - 1) - numbers[spoken]
-            numbers[prev_spoken] = (turn - 1)
-        else:
-            spoken = 0
+        spoken = (turn - 1) - numbers[spoken] if spoken in numbers else 0
         numbers[prev_spoken] = turn - 1
 
     return spoken
