@@ -23,7 +23,6 @@ def do_it(input, times):
             spoken = 0
         numbers[prev_spoken] = turn - 1
 
-        # print(f'Turn: {turn}, spoken: {spoken}, numbers: {numbers}')
     return spoken
 
 
