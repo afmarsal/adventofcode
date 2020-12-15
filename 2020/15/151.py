@@ -7,12 +7,13 @@ INPUT_0 = '5,2,8,16,18,0,1'
 
 
 def do_it(input, times):
-    # { number: [turn, times?]
-    numbers = {v: i + 1 for i, v in enumerate(map(int, input.split(',')))}
+    num_list = list(map(int, input.split(',')))
+    # { number: last_turn]
+    numbers = {v: i + 1 for i, v in enumerate(num_list)}
+
+    spoken = num_list[len(num_list) - 1]
     initial_turn = len(numbers) + 1
 
-    spoken = list(map(int, input.split(',')))[len(numbers) - 1]
-    print(f'Turn: {initial_turn - 1}, spoken: {spoken}, numbers: {numbers}')
     for turn in range(initial_turn, times + 1):
         prev_spoken = spoken
         if spoken in numbers:
