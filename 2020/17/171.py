@@ -1,44 +1,43 @@
 import itertools
 import operator
+import util
 
 
-DELTAS = [c for c in itertools.product((0, 1, -1), repeat=3) if c != (0, 0, 0)]
+def neighbours(coord, deltas):
+    return (tuple(map(operator.add, delta, coord)) for delta in deltas)
 
 
-def neighbours(coord):
-    return (tuple(map(operator.add, delta, coord)) for delta in DELTAS)
-
-
-def calc_next(grid):
-    next_coord = {neighbour for coord in grid for neighbour in neighbours(coord)}
+def calc_next(grid, deltas):
+    next_coord = {n for coord in grid for n in neighbours(coord, deltas)}
     next_grid = {}
-    # print(next_coord)
     for coord in next_coord:
-        active = sum(grid.get(n, '.') == '#' for n in neighbours(coord))
+        active = sum(grid.get(n, '.') == '#' for n in neighbours(coord, deltas))
         if grid.get(coord, '.') == '#':
-            if 2 <= active <= 3:
-                next_grid[coord] = '#'
-            else:
-                next_grid[coord] = '.'
+            next_grid[coord] = '#' if 2 <= active <= 3 else '.'
         else:
             next_grid[coord] = '#' if active == 3 else '.'
-    # print(next_grid)
     return next_grid
 
 
-def do_it(filename, times):
-    with open(filename) as f:
-        lines = list(map(str.strip, f.readlines()))
-
-    grid = {(i, j, 0): c for i, line in enumerate(lines) for j, c in enumerate(line)}
-    for i in range(times):
-        next_grid = calc_next(grid)
-        grid = next_grid
+def do_it(grid, deltas):
+    for i in range(6):
+        grid = calc_next(grid, deltas)
     return sum(c == '#' for c in grid.values())
 
 
 if __name__ == '__main__':
-    output = do_it('input1.txt', 6)
-    print(f'Result: {output}')
+    filelines = util.lines('input1.txt')
 
-# Result: 284
+    deltas3d = [c for c in itertools.product((0, 1, -1), repeat=3) if c != (0, 0, 0)]
+    grid3d = {(i, j, 0): c for i, line in enumerate(filelines) for j, c in enumerate(line)}
+    output = do_it(grid3d, deltas3d)
+    print(f'Part 1: {output}')
+
+    deltas4d = [c for c in itertools.product((0, 1, -1), repeat=4) if c != (0, 0, 0, 0)]
+    grid4d = {(i, j, 0, 0): c for i, line in enumerate(filelines) for j, c in enumerate(line)}
+    output = do_it(grid4d, deltas4d)
+    print(f'Part 2: {output}')
+
+# Part 1: 284
+# Part 2: 2240
+
