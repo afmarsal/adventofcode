@@ -41,4 +41,4 @@ if __name__ == '__main__':
     output = do_it('input1.txt', 6)
     print(f'Result: {output}')
 
-# Result: 284
+# Result: 2240
