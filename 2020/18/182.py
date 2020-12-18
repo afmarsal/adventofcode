@@ -21,10 +21,12 @@ def process_token(stack, status, token):
         elif status == WAITING_OPERATOR:
             if token == ')':
                 curr = stack.pop()
-                if stack[-1] != '(':
-                    raise Exception('WAT!')
+                while stack[-1] != '(':
+                    action = OPERATORS[stack.pop()]
+                    operand1 = stack.pop()
+                    curr = action(operand1, curr)
                 stack[-1] = curr
-                if len(stack) > 1 and stack[-2] != '(':
+                if len(stack) > 1 and stack[-2] == '+':
                     operand2 = stack.pop()
                     action = OPERATORS[stack.pop()]
                     operand1 = stack.pop()
@@ -40,9 +42,16 @@ def process_token(stack, status, token):
                 stack.append('(')
                 return WAITING_OPERAND_1
             else:
+                operand2 = int(token)
+                if stack[-1] == '*':
+                    stack.append(operand2)
+                    return WAITING_OPERATOR
+                else:
+                    if stack[-1] != '+':
+                        raise Exception('WAT 2!!')
                 action = OPERATORS[stack.pop()]
                 operand1 = stack.pop()
-                stack.append(action(operand1, int(token)))
+                stack.append(action(operand1, operand2))
                 return WAITING_OPERATOR
     finally:
         print(f'Processed {token}, {status}, {stack}')
@@ -64,7 +73,14 @@ def calc(line):
         else:
             status = process_token(stack, status, token)
 
-    return stack.pop()
+    # List should contain only '*' operations
+    print(f'Final stack: {stack}')
+    result = 1
+    for i in range(0, len(stack), 2):
+        print(f'mul: {stack[i]} * {result}')
+        result *= stack[i]
+
+    return result
 
 
 def do_it(lines):
@@ -76,8 +92,8 @@ if __name__ == '__main__':
         filelines = list(map(str.strip, f))
 
     output = do_it(filelines)
-    print(f'Part 1: {output}')
+    print(f'Part 2: {output}')
 
 
-# Part 1: 29839238838303
+# Part 2: 201376568795521
 
