@@ -51,19 +51,11 @@ def process_token(stack, status, token):
 
 def calc(line):
     print(line)
-    tokens = line.split()
+
     stack = []
     status = WAITING_OPERAND_1
-    for token in tokens:
-        if token.startswith('('):
-            for token in token:
-                status = process_token(stack, status, token)
-        elif token.endswith(')'):
-            for token in token:
-                status = process_token(stack, status, token)
-        else:
-            status = process_token(stack, status, token)
-
+    for token in [c for word in line.split() for c in word]:
+        status = process_token(stack, status, token)
     return stack.pop()
 
 

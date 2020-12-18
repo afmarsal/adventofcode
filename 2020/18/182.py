@@ -60,24 +60,14 @@ def process_token(stack, status, token):
 
 def calc(line):
     print(line)
-    tokens = line.split()
     stack = []
     status = WAITING_OPERAND_1
-    for token in tokens:
-        if token.startswith('('):
-            for token in token:
-                status = process_token(stack, status, token)
-        elif token.endswith(')'):
-            for token in token:
-                status = process_token(stack, status, token)
-        else:
-            status = process_token(stack, status, token)
+    for token in [c for word in line.split() for c in word]:
+        status = process_token(stack, status, token)
 
     # List should contain only '*' operations
-    print(f'Final stack: {stack}')
     result = 1
     for i in range(0, len(stack), 2):
-        print(f'mul: {stack[i]} * {result}')
         result *= stack[i]
 
     return result
@@ -88,7 +78,7 @@ def do_it(lines):
 
 
 if __name__ == '__main__':
-    with open('input1.txt') as f:
+    with open('input0.txt') as f:
         filelines = list(map(str.strip, f))
 
     output = do_it(filelines)
