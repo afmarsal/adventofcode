@@ -1,34 +1,30 @@
 import operator
 
-OPERATORS = {'+': operator.add, '*': operator.mul}
 WAITING_OPERAND_1 = 'waiting1'
 WAITING_OPERATOR = 'waiting2'
 WAITING_OPERAND_2 = 'waitingOp'
-DIGITS = (str(c) for c in range(10))
+
+
+def resolve_top_stack(stack):
+    res = eval(f'{stack.pop()} {stack.pop()} {stack.pop()}')
+    stack.append(res)
 
 
 def process_token(stack, status, token):
-    print(f'Processing {token}, {status}, {stack}')
+    # print(f'Processing {token}, {status}, {stack}')
     try:
         if status == WAITING_OPERAND_1:
-            if token == '(':
-                stack.append('(')
-                return WAITING_OPERAND_1
-            else:
-                stack.append(int(token))
-                return WAITING_OPERATOR
+            stack.append(token)
+            return WAITING_OPERAND_1 if token == '(' else WAITING_OPERATOR
 
         elif status == WAITING_OPERATOR:
             if token == ')':
-                curr = stack.pop()
-                if stack[-1] != '(':
+                # Replace '(' with eval'ed result at the top
+                if stack[-2] != '(':
                     raise Exception('WAT!')
-                stack[-1] = curr
+                stack[-1] = stack.pop()
                 if len(stack) > 1 and stack[-2] != '(':
-                    operand2 = stack.pop()
-                    action = OPERATORS[stack.pop()]
-                    operand1 = stack.pop()
-                    stack.append(action(operand1, operand2))
+                    resolve_top_stack(stack)
                 return WAITING_OPERATOR
 
             else:
@@ -36,22 +32,18 @@ def process_token(stack, status, token):
                 return WAITING_OPERAND_2
 
         elif status == WAITING_OPERAND_2:
-            if token[0] == '(':
-                stack.append('(')
+            stack.append(token)
+            if token == '(':
                 return WAITING_OPERAND_1
             else:
-                action = OPERATORS[stack.pop()]
-                operand1 = stack.pop()
-                stack.append(action(operand1, int(token)))
+                resolve_top_stack(stack)
                 return WAITING_OPERATOR
     finally:
-        print(f'Processed {token}, {status}, {stack}')
+        # print(f'Processed {token}, {status}, {stack}')
         pass
 
 
 def calc(line):
-    print(line)
-
     stack = []
     status = WAITING_OPERAND_1
     for token in [c for word in line.split() for c in word]:
