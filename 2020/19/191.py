@@ -6,6 +6,8 @@ def split_rule(rule):
         return [rule[0]], [rule[2]]
     elif rule[2] == '|':
         return rule[0:2], rule[3:]
+    else:
+        raise Exception("Where's the |!!!")
 
 
 def subst(rules, pending, matches):
