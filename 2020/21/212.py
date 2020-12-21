@@ -22,8 +22,18 @@ def do_it(lines):
                     results[allergen] &= ingredients
         print(f'{allergen} -> {results[allergen]}')
 
-    contaminated = {a for s in results.values() for a in s}
-    return sum(len(ingredients - contaminated) for ingredients, allergens in data)
+    sorted_data = [(list(i)[0], a) for a, i in results.items() if len(i) == 1]
+    unique = {s[0] for s in sorted_data}
+    while len(unique) < len(all_allergens):
+        for a, i in results.items():
+            i.difference_update(unique)
+            if len(i) == 1:
+                unique_ing = list(i)[0]
+                unique.add(unique_ing)
+                sorted_data.append((unique_ing, a))
+
+    sorted_data.sort(key=lambda x: x[1])
+    return ','.join([s[0] for s in sorted_data])
 
 
 if __name__ == '__main__':
@@ -31,6 +41,6 @@ if __name__ == '__main__':
         lines = list(map(str.strip, f))
 
     output = do_it(lines)
-    print(f'Part 1: {output}')
+    print(f'Part 2: {output}')
 
-# Part 1: 1958
+# Part 1: xxscc,mjmqst,gzxnc,vvqj,trnnvn,gbcjqbm,dllbjr,nckqzsg
