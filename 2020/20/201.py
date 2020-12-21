@@ -1,14 +1,12 @@
 import functools
 import operator
 import re
-import numpy as np
 
 
 class Tile:
 
     def __init__(self, id, pieces) -> None:
         self.id = id
-        self.tile = np.array([list(s) for s in pieces])
         self.sides = []
         self.sides.append(pieces[0])
         self.sides.append(pieces[0][::-1])
@@ -22,7 +20,7 @@ class Tile:
         self.sides.append(s[::-1])
 
     def __repr__(self) -> str:
-        return f"tile: {self.id}\n{self.tile}\n{self.sides}"
+        return f"tile: {self.id}\n{self.sides}"
 
 
 def parse(lines):
@@ -58,5 +56,4 @@ if __name__ == '__main__':
     output = do_it(lines)
     print(f'Part 1: {output}')
 
-# Part 1:
-# 20899048083289 too high
+# Part 1: 15670959891893
