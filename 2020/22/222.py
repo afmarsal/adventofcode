@@ -1,7 +1,14 @@
 def unique_str(deck1, deck2):
-    return ''.join([f'{n:02d}' for n in deck1]) + ',' + ''.join([f'{n:02d}' for n in deck2])
+    # return ','.join([str(n) for n in deck1]) + ':' + ','.join([str(n) for n in deck2])
+    return sum((i + 1) * j for i, j in enumerate(deck1)) * 1000000 + sum((i + 1) * j for i, j in enumerate(deck2))
+
 
 counter = 1
+
+
+def add(l, c1, c2):
+    l.append(c1)
+    l.append(c2)
 
 
 def win(deck1, deck2, game=1):
@@ -22,15 +29,15 @@ def win(deck1, deck2, game=1):
         c2 = deck2.pop(0)
         if c1 <= len(deck1) and c2 <= len(deck2):
             if win(deck1[:c1], deck2[:c2], game + 1):
-                deck1.extend([c1, c2])
+                add(deck1, c1, c2)
             else:
-                deck2.extend([c2, c1])
+                add(deck2, c2, c1)
 
         else:
             if c1 > c2:
-                deck1.extend([c1, c2])
+                add(deck1, c1, c2)
             else:
-                deck2.extend([c2, c1])
+                add(deck2, c2, c1)
     return len(deck1) > len(deck2)
 
 
