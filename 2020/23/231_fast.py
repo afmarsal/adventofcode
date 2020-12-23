@@ -1,79 +1,92 @@
-def do_it(lst):
-    size = len(lst)
-    next_lst = lst.copy()
-    pickup = [0] * 3
-    for i in range(100):
-        curr_idx = 0
-        curr = lst[curr_idx]
+class Cup:
+
+    def __init__(self, val, nxt) -> None:
+        self.val = val
+        self.nxt_pos = nxt
+
+    def __repr__(self) -> str:
+        return str(self.val)
+
+
+class Cups:
+
+    def __init__(self, lst) -> None:
+        self.cups = [Cup(v, (i + 1) % len(lst)) for i, v in enumerate(lst)]
+        self.val_to_pos = [0] * (len(lst) + 1)
+        for i in range(len(lst)):
+            self.val_to_pos[lst[i]] = i
+
+    def at_pos(self, pos):
+        return self.cups[pos]
+
+    def next(self, cup):
+        return self.cups[cup.nxt_pos]
+
+    def of_val(self, val):
+        return self.cups[self.val_to_pos[val]]
+
+    def dest(self, cup, pickup):
+        val = (cup.val - 1, len(self.cups))[cup.val - 1 == 0]
+        while val in pickup:
+            val = (val - 1, len(self.cups))[val - 1 == 0]
+        return self.cups[self.val_to_pos[val]]
+
+    def insert_at(self, dest, pickup):
+        after_pu_pos = dest.nxt_pos
+        dest.nxt_pos = self.val_to_pos[pickup[0].val]
+        pickup[0].nxt_pos = self.val_to_pos[pickup[1].val]
+        pickup[1].nxt_pos = self.val_to_pos[pickup[2].val]
+        pickup[2].nxt_pos = after_pu_pos
+
+    def __repr__(self) -> str:
+        start = self.cups[0]
+        nxt = self.next(start)
+        result = [str(start.val)]
+        while nxt != start:
+            result.append(str(nxt.val))
+            nxt = self.next(nxt)
+        return ' '.join(result)
+
+
+def do_it(lst, times):
+    cups = Cups(lst)
+    curr = cups.at_pos(0)
+    pickup = [None] * 3
+    for i in range(times):
         print(f'-- Move {i + 1} --')
-        print(f'curr = {curr}, cups: {lst}')
+        print(f'curr = {curr}, cups: {cups}')
+
+        # Choose pickup
+        n = cups.next(curr)
         for j in range(3):
-            pickup[j] = lst[(curr_idx + j + 1) % len(lst)]
+            pickup[j] = n
+            n = cups.next(n)
+        curr.nxt_pos = pickup[2].nxt_pos
         print(f'pick up: {pickup}')
 
         # Choose destination
-        dest = (curr - 1) % size
-        dest = (dest, size)[dest == 0]
-        while dest in pickup:
-            dest = (dest - 1) % size
-            dest = (dest, size)[dest == 0]
+        dest = cups.dest(curr, {v.val for v in pickup})
         print(f'dest: {dest}')
+        # Insert pickup
+        cups.insert_at(dest, pickup)
 
-        ins_idx = lst.index(dest) + 1 % size
-        # copy the list to another in 3 "regions":
-        # 1: after pickup until insert point
-        # 2: pickup
-        # 3: the rest
-        # any of them may hit end of buffer
-        # 1st
-        write_idx = 0
-        start_pickup = curr_idx + 1 % size
-        end_pickup = curr_idx + 4 % size
-        if end_pickup < ins_idx:
-            chunk_size = ins_idx - end_pickup
-            next_lst[write_idx:chunk_size] = lst[end_pickup:ins_idx]
-            write_idx = chunk_size
-        else:
-            chunk_size = lst(lst) - end_pickup
-            next_lst[0:chunk_size] = lst[end_pickup:]
-            write_idx = chunk_size + 1
-            chunk_size = ins_idx
-            next_lst[write_idx:write_idx + chunk_size] = lst[:ins_idx]
-            write_idx += chunk_size
-        # 2nd
-        if start_pickup > end_pickup:
-            raise Exception("Not handled")
-        else:
-            next_lst[write_idx:write_idx + len(pickup)] = pickup
-            write_idx += len(pickup)
-        # 3rd
-        if ins_idx < start_pickup:
-            chunk_size = curr_idx - ins_idx + 1
-            next_lst[write_idx:write_idx + chunk_size] = lst[ins_idx:curr_idx]
-        else:
-            chunk_size = len(lst) - ins_idx
-            next_lst[write_idx:write_idx + chunk_size] = lst[ins_idx:len(lst)]
-            write_idx += chunk_size
-            next_lst[write_idx:] = lst[:curr_idx+1]
-
-        lst, next_lst = next_lst, lst
+        curr = cups.next(curr)
 
     print('-- final --')
-    curr = int(lst[0])
     print(f'curr = {curr}, cups: {lst}')
-    one_idx = lst.index(1)
-    if one_idx == len(lst) - 1:
-        result = lst[:len(lst) - 1]
-    else:
-        result = lst[one_idx + 1:] + lst[0:one_idx]
-    print(result)
-    return ''.join([str(n) for n in result])
+    start = cups.of_val(1)
+    nxt = cups.next(start)
+    result = []
+    while nxt != start:
+        result.append(str(nxt.val))
+        nxt = cups.next(nxt)
+    return ''.join(result)
 
 
 if __name__ == '__main__':
     # s = list(map(int, '389125467'))
     s = list(map(int, '792845136'))
-    output = do_it(s)
+    output = do_it(s, 100)
     print(f'Part 1: {output}')
 
 # Part 1: 98742365
