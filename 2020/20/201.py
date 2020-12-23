@@ -46,6 +46,7 @@ def do_it(lines):
                 if side in tiles[j].sides:
                     matching[tile.id] += 1
                     matching[tiles[j].id] += 1
+    print(matching)
     return functools.reduce(operator.mul, [k for k, v in matching.items() if v == 4], 1)
 
 
