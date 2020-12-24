@@ -39,6 +39,7 @@ class Tile:
         self.combos.append(np.flipud(np.rot90(self.tile, 1, (1, 0))))
         self.combos.append(np.flipud(np.rot90(self.tile, 2, (1, 0))))
         self.combos.append(np.flipud(np.rot90(self.tile, 3, (1, 0))))
+        self.final_combo = None
 
         self.sides = []
         self.sides.append(pieces[0])
@@ -51,12 +52,6 @@ class Tile:
         s = ''.join([p[-1] for p in pieces])
         self.sides.append(s)
         self.sides.append(s[::-1])
-
-    # def sides(self):
-    #     return {'up': up(self.tile),
-    #             'down': down(self.tile),
-    #             'right': right(self.tile),
-    #             'left': left(self.tile)}
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Tile):
@@ -98,75 +93,85 @@ def get_matches(tiles):
 
 
 def print_board(board):
-    s = 0
-    for i in range(10):
-        for s in range(2):
-            print(''.join([str(j) for j in board[0][s][i]]), end='')
-            print(' ', end='')
+    for board_row in range(len(board)):
+        for tile_row in range(10):
+            for board_col in range(len(board)):
+                print(''.join([str(j) for j in board[board_row][board_col].final_combo[tile_row]]), end='')
+                print(' ', end='')
+            print()
         print()
 
 
 def arrange(tiles, matching):
     sides = int(math.sqrt(len(tiles)))
+    # The full board where all the tiles are positioned
+    # X axis is second coordinate -> 0,1; 0,2 and so on
     board = np.empty((sides, sides), dtype=object)
+    # Select one random corner as the top left corner
     corner_id = [m for m, k in matching.items() if len(k) == 2][0]
     print(f'up left corner: {corner_id}')
-    top_right = [t for t in tiles if t.id == corner_id][0]
-    # Fix one corner as the top right corner, and match it with the next to the right
-    for top_right_combo in top_right.combos:
+    top_left = [t for t in tiles if t.id == corner_id][0]
+    # Find the tile to the right
+    for top_left_combo in top_left.combos:
         found = False
         for adj in matching[corner_id]:
             for adj_combo in adj.combos:
-                if right(top_right_combo) == left(adj_combo):
+                if right(top_left_combo) == left(adj_combo):
                     found = True
-                    board[0][0] = top_right_combo
-                    board[0][1] = adj_combo
-                    matching[top_right.id].remove(adj)
+                    fix_tile(board, matching, (0, 0), top_left, top_left_combo, adj)
+                    fix_tile(board, matching, (0, 1), adj, adj_combo, top_left)
                     break
             if found:
                 break
         if found:
             break
 
-    print('Before orienting')
-    print_board(board)
-    # get right orientation: match the tile below the top right corner
+    # Make sure the orientation is correct (as of now, it could be the bottom left)
     adj = list(matching[corner_id])[0]
     for adj_combo in adj.combos:
-        if down(board[0][0]) == up(adj_combo):
-            print(f'1,0: {adj.id}')
-            board[1][0] = adj_combo
+        if down(board[0][0].final_combo) == up(adj_combo):
+            fix_tile(board, matching, (1, 0), adj, adj_combo, board[0][0])
             break
     else:
         # Could not find match => flip
-        board[0][0] = np.flipud(board[0][0])
-        board[0][1] = np.flipud(board[0][1])
+        board[0][0].final_combo = np.flipud(board[0][0].final_combo)
+        board[0][1].final_combo = np.flipud(board[0][1].final_combo)
         # And now the 1, 0 piece should match
         for adj_combo in adj.combos:
-            if down(board[0][0]) == up(adj_combo):
+            if down(board[0][0].final_combo) == up(adj_combo):
                 print(f'1,0: {adj.id}')
-                board[1][0] = adj_combo
+                fix_tile(board, matching, (1, 0), adj, adj_combo, board[0][0])
                 break
         else:
             raise Exception('Could not match 1, 0!!!')
 
-    # for top_right_combo in curr.combos:
-    #     found = False
-    #     for adj in matching[corner_id]:
-    #         for adj_combo in adj.combos:
-    #             if right(top_right_combo) == left(adj_combo):
-    #                 found = True
-    #                 print(f'next: {adj.id}')
-    #                 board[0][2] = adj_combo.tolist()
-    #                 curr = adj
-    #                 break
-    #         if found:
-    #             break
-    #     if found:
-    #         break
+    # We have positions (0, 0), (1, 0) and (0, 1) fixed.
+    # Let's match the rest first row
+    for board_col in range(1, sides - 1):
+        ref = board[0][board_col]
+        for adj in matching[ref.id]:
+            for adj_combo in adj.combos:
+                if right(ref.final_combo) == left(adj_combo):
+                    fix_tile(board, matching, (0, board_col + 1), adj, adj_combo, ref)
+
+    # rest of rows
+    for board_row in range(1, sides):
+        for board_col in range(0, sides):
+            ref = board[board_row-1][board_col]
+            for adj in matching[ref.id]:
+                for adj_combo in adj.combos:
+                    if down(ref.final_combo) == up(adj_combo):
+                        fix_tile(board, matching, (board_row, board_col), adj, adj_combo, ref)
 
     print('After orienting')
     print_board(board)
+    return board
+
+
+def fix_tile(board, matching, pos, tile, tile_combo, adj):
+    tile.final_combo = tile_combo
+    matching[tile.id].discard(adj)
+    board[pos[0]][pos[1]] = tile
 
 
 def do_it(lines):
@@ -177,7 +182,7 @@ def do_it(lines):
 
 
 if __name__ == '__main__':
-    with open('input0.txt') as f:
+    with open('input1.txt') as f:
         lines = list(map(str.strip, f))
 
     output = do_it(lines)
