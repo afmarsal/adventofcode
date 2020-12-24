@@ -1,3 +1,4 @@
+import functools
 from operator import add
 
 
@@ -28,9 +29,7 @@ def do_it(lines):
     grid = set()
     for line in lines:
         instructions = parse_instructions(line)
-        curr = (0, 0)
-        for op in instructions:
-            curr = DELTAS[op](curr)
+        curr = functools.reduce(lambda coord, op: DELTAS[op](coord), instructions, (0, 0))
         if curr in grid:
             grid.remove(curr)
         else:
