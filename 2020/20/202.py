@@ -175,17 +175,32 @@ def fix_tile(board, matching, pos, tile, tile_combo, adj):
 
 
 def remove_extra(board):
+    # result = np.array((8*len(board), 8*len(board)), dtype=object)
     result = []
     for row in range(len(board)):
+        full_row = []
         for i in range(1, 9):
-            full_row = ''
+            full_row = []
             for col in range(len(board)):
-                full_row += ''.join(board[row][col].final_combo[i][1:9])
+                full_row.extend(list(board[row, col].final_combo[i][1:9]))
             result.append(full_row)
     print('Removed extra:')
+    result = np.array(result)
     for i in range(len(result)):
-        print(result[i])
+        print(''.join(result[i]))
     return result
+
+
+def locate_monster(monster_board):
+    coords = [(1, 0), (2, 1), (2, 4), (1, 5), (1, 6), (2, 7), (2, 10), (1, 11), (1, 12), (2, 13), (2, 16), (1, 17),
+              (1, 18), (1, 19), (0, 18)]
+    max_row = max(coord[0] for coord in coords)
+    max_col = max(coord[1] for coord in coords)
+    for row in range(len(monster_board) - max_row):
+        for col in range(len(monster_board) - max_col):
+            if all(monster_board[row+coord[0]][col+coord[1]] in {'O', '#'} for coord in coords):
+                for coord in coords:
+                    monster_board[row+coord[0]][col+coord[1]] = 'O'
 
 
 def do_it(lines):
@@ -193,14 +208,24 @@ def do_it(lines):
     matches = get_matches(tiles)
     board = arrange(tiles, matches)
     monster_board = remove_extra(board)
-    # corner0 = [k for k, v in matching.items() if v == 4][0]
+    # Find monsters in all combinations of board
+    locate_monster(monster_board)
+    for i in range(3):
+        monster_board = np.rot90(monster_board)
+        locate_monster(monster_board)
+    monster_board = np.flipud(np.rot90(monster_board))
+    locate_monster(monster_board)
+    for i in range(3):
+        monster_board = np.rot90(monster_board)
+        locate_monster(monster_board)
+    return sum(cell == '#' for row in monster_board for cell in row)
 
 
 if __name__ == '__main__':
-    with open('input0.txt') as f:
+    with open('input1.txt') as f:
         lines = list(map(str.strip, f))
 
     output = do_it(lines)
     print(f'Part 2: {output}')
 
-# Part 2:
+# Part 2: 1964
