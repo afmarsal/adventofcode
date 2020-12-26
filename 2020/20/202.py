@@ -174,15 +174,30 @@ def fix_tile(board, matching, pos, tile, tile_combo, adj):
     board[pos[0]][pos[1]] = tile
 
 
+def remove_extra(board):
+    result = []
+    for row in range(len(board)):
+        for i in range(1, 9):
+            full_row = ''
+            for col in range(len(board)):
+                full_row += ''.join(board[row][col].final_combo[i][1:9])
+            result.append(full_row)
+    print('Removed extra:')
+    for i in range(len(result)):
+        print(result[i])
+    return result
+
+
 def do_it(lines):
     tiles = parse(lines)
     matches = get_matches(tiles)
-    arrange(tiles, matches)
+    board = arrange(tiles, matches)
+    monster_board = remove_extra(board)
     # corner0 = [k for k, v in matching.items() if v == 4][0]
 
 
 if __name__ == '__main__':
-    with open('input1.txt') as f:
+    with open('input0.txt') as f:
         lines = list(map(str.strip, f))
 
     output = do_it(lines)
