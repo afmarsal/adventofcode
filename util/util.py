@@ -3,7 +3,7 @@ import itertools
 
 
 def read_ints_from_file(filename):
-    return list(map(int, f))
+    return list(map(int, filename))
 
 
 def read_regex_from_file(filename, regex):
