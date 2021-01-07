@@ -1,16 +1,12 @@
-from functools import reduce
+from collections import Counter
 
 
 def do_it(filename):
     with open(filename) as f:
         ints = sorted(list(map(int, f)))
-
-    def inc(d, idx):
-        d[idx] = d[idx] + 1
-        return d
-
-    d = reduce(lambda d, i: inc(d, ints[i] - ints[i - 1]), range(1, len(ints)), {1: 1, 3: 1})
-    return d[1] * d[3]
+        ints = [0] + ints + [max(ints) + 3]
+        c = Counter([ints[i + 1] - ints[i] for i in range(len(ints) - 1)])
+        return c[1] * c[3]
 
 
 if __name__ == '__main__':

@@ -1,19 +1,12 @@
-from itertools import count
+import math
 
 
 def do_it(filename):
     with open(filename) as f:
         v0 = int(f.readline().strip())
-        bus_ids = [int(c) for c in f.readline().strip().replace('x', '0').split(',')]
+        bus_ids = [int(c) for c in f.readline().strip().split(',') if c != 'x']
 
-    freqs = {}
-    for bus_id in bus_ids:
-        if bus_id != 0:
-            for i in count(0, bus_id):
-                if i >= v0:
-                    freqs[bus_id] = i - v0
-                    break
-
+    freqs = {bus_id: (bus_id * math.ceil(v0 / bus_id)) - v0 for bus_id in bus_ids}
     result = min(freqs, key=freqs.get)
     return result * freqs[result]
 

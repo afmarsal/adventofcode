@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 
 class Graph:
 
@@ -21,13 +23,24 @@ class Graph:
         return curr_paths
 
 
+@lru_cache(None)
+def arrangements(jolts, prev) -> int:
+    """The number of arrangements that go from prev to the end of `jolts`."""
+    first, rest = jolts[0], jolts[1:]
+    if first - prev > 3:
+        return 0
+    elif not rest:
+        return 1
+    else:
+        return (arrangements(rest, first) +  # Use first
+                arrangements(rest, prev))    # Skip first
+
+
 def do_it(filename):
     with open(filename) as f:
         ints = sorted(list(map(int, f)))
-        ints.insert(0, 0)
-        ints.append(max(ints) + 3)
-    graph = Graph(ints)
-    return graph.count_paths(0, 0)
+        # ints = [0] + ints + [max(ints) + 3]
+    return arrangements(tuple(ints), 0)
 
 
 if __name__ == '__main__':

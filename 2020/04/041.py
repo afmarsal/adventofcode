@@ -1,3 +1,5 @@
+import re
+
 import util
 
 
@@ -13,7 +15,8 @@ def do_it(filename):
 
 
 if __name__ == '__main__':
-    output = do_it('input041.txt')
-    print(f'Result: {output}')
+    # output = do_it('input041.txt')
+    # print(f'Result: {output}')
 
+    print(dict(re.findall(r'([a-z]+):([^\s]+)', util.grouped_lines('input041.txt'))))
 # Result: 200

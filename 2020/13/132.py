@@ -1,7 +1,7 @@
 def do_it(filename):
     with open(filename) as f:
         v0 = int(f.readline().strip())
-        bus_ids = [int(c) for c in f.readline().strip().replace('x', '0').split(',')]
+        bus_ids = [int(c) for c in f.readline().strip().split(',') if c != 'x']
 
     # [id, offset]
     freqs = [(bus_id, i) for i, bus_id in enumerate(bus_ids) if bus_id > 0]
