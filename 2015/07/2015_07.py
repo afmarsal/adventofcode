@@ -23,8 +23,7 @@ def calc(op):
     global wires
 
     spl = wires[op].split()
-    if spl[0] == 'NOT':
-        spl.insert(0, 'ignore')
+    if spl[0] == 'NOT': spl.insert(0, 'ignore')
     param1, op, param2 = spl if len(spl) > 1 else (spl[0], 'SELF', 0)
     return OPS[op](param1, param2)
 
@@ -35,28 +34,41 @@ def part1(lines, wire):
     return calc(wire)
 
 
-# sample1 = '''123 -> x
-# 456 -> y
-# x AND y -> d
-# x OR y -> e
-# x LSHIFT 2 -> f
-# y RSHIFT 2 -> g
-# NOT x -> h
-# NOT y -> i
-# '''
+def part2(lines, wire, b_override):
+    global wires
+    wires = dict(reversed(line.split(' -> ')) for line in lines)
+    wires['b'] = str(b_override)
+    return calc(wire)
 
-# DO NOT RUN WHEN USING @cache!!!!
-# assert part1(sample1.splitlines(), 'd') == 72
-# assert part1(sample1.splitlines(), 'e') == 507
-# assert part1(sample1.splitlines(), 'f') == 492
-# assert part1(sample1.splitlines(), 'g') == 114
-# assert part1(sample1.splitlines(), 'h') == 65412
-# assert part1(sample1.splitlines(), 'i') == 65079
-# assert part1(sample1.splitlines(), 'x') == 123
-# assert part1(sample1.splitlines(), 'y') == 456
 
+sample1 = '''123 -> x
+456 -> y
+x AND y -> d
+x OR y -> e
+x LSHIFT 2 -> f
+y RSHIFT 2 -> g
+NOT x -> h
+NOT y -> i
+'''
+
+assert part1(sample1.splitlines(), 'd') == 72
+assert part1(sample1.splitlines(), 'e') == 507
+assert part1(sample1.splitlines(), 'f') == 492
+assert part1(sample1.splitlines(), 'g') == 114
+assert part1(sample1.splitlines(), 'h') == ~123
+assert part1(sample1.splitlines(), 'i') == ~456
+assert part1(sample1.splitlines(), 'x') == 123
+assert part1(sample1.splitlines(), 'y') == 456
+
+calc.cache_clear()
 lines = open('input.txt').read().splitlines()
-print(f'# Part 1: {part1(lines, "a")}')
-assert part1(lines, 'a') == 46065
+wire_a = part1(lines, 'a')
+print(f'# Part 1: {wire_a}')
+assert wire_a == 46065
+
+calc.cache_clear()
+new_wire_a = part2(lines, 'a', wire_a)
+print(f'# Part 2: {new_wire_a}')
 
 # part 1: 46065
+# part 2: 14134
