@@ -1,10 +1,5 @@
 import functools
 
-MAX_SHORT = 0xffff
-
-wires = dict()
-values = dict()
-
 OPS = {
     'NOT': lambda x, y: ~calc(y),
     'RSHIFT': lambda x, y: calc(x) >> calc(y),
@@ -28,19 +23,6 @@ def calc(op):
     return OPS[op](param1, param2)
 
 
-def part1(lines, wire):
-    global wires
-    wires = dict(reversed(line.split(' -> ')) for line in lines)
-    return calc(wire)
-
-
-def part2(lines, wire, b_override):
-    global wires
-    wires = dict(reversed(line.split(' -> ')) for line in lines)
-    wires['b'] = str(b_override)
-    return calc(wire)
-
-
 sample1 = '''123 -> x
 456 -> y
 x AND y -> d
@@ -51,24 +33,39 @@ NOT x -> h
 NOT y -> i
 '''
 
-assert part1(sample1.splitlines(), 'd') == 72
-assert part1(sample1.splitlines(), 'e') == 507
-assert part1(sample1.splitlines(), 'f') == 492
-assert part1(sample1.splitlines(), 'g') == 114
-assert part1(sample1.splitlines(), 'h') == ~123
-assert part1(sample1.splitlines(), 'i') == ~456
-assert part1(sample1.splitlines(), 'x') == 123
-assert part1(sample1.splitlines(), 'y') == 456
 
-calc.cache_clear()
+def sample(lines, wire):
+    global wires
+    wires = dict(reversed(line.split(' -> ')) for line in lines)
+    return calc(wire)
+
+
+assert sample(sample1.splitlines(), 'd') == 72
+assert sample(sample1.splitlines(), 'e') == 507
+assert sample(sample1.splitlines(), 'f') == 492
+assert sample(sample1.splitlines(), 'g') == 114
+assert sample(sample1.splitlines(), 'h') == ~123
+assert sample(sample1.splitlines(), 'i') == ~456
+assert sample(sample1.splitlines(), 'x') == 123
+assert sample(sample1.splitlines(), 'y') == 456
+
 lines = open('input.txt').read().splitlines()
-wire_a = part1(lines, 'a')
+wires = dict(reversed(line.split(' -> ')) for line in lines)
+
+# Part 1
+calc.cache_clear()
+wire_a = calc('a')
+
 print(f'# Part 1: {wire_a}')
 assert wire_a == 46065
 
+# Part 2
 calc.cache_clear()
-new_wire_a = part2(lines, 'a', wire_a)
+wires['b'] = str(wire_a)
+new_wire_a = calc('a')
+
 print(f'# Part 2: {new_wire_a}')
+assert new_wire_a == 14134
 
 # part 1: 46065
 # part 2: 14134
