@@ -1,24 +1,33 @@
+import re
+
+
 def do_str(s1):
-    result = len(s1) - len(eval(s1))
-    print(f'{s1} - {eval(s1)} = {len(s1)} - {len(eval(s1))} = {result}')
-    return result
+    trans = str.maketrans({'"': '\\"', '\\': '\\\\'})
+    s2 = '"' + s1.translate(trans) + '"'
+    return len(s2) - len(s1)
 
 
-def do(lines):
+def part1(lines):
     return sum(len(line) - len(eval(line)) for line in lines)
-    # return sum(do_str(line) for line in lines)
 
 
-sample = r'''""
+def part2(lines):
+    return sum(do_str(line) for line in lines)
+
+
+sample_lines = r'''""
 "abc"
 "aaa\"aaa"
 "\x27"
-'''
-
-assert do(sample.splitlines()) == 23 - 11
+'''.splitlines()
 
 lines = open('input.txt').read().splitlines()
-part1 = do(lines)
-print(f'# Part 1: {part1}')
 
-# Part 1: 1633 -- too high
+assert part1(sample_lines) == 23 - 11
+print(f'# Part 1: {part1(lines)}')
+
+assert part2(sample_lines) == 42 - 23
+print(f'# Part 2: {part2(lines)}')
+
+# Part 1: 1333
+# Part 2: 2046
