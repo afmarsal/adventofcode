@@ -25,3 +25,5 @@ print(f'# Part 2: {part1("1113122113", 50)}')
 
 # Part 1: 360154
 # Part 2: 5103798
+
+# Preallocating size for "changes" reduces time
