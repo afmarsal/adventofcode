@@ -12,10 +12,7 @@ def next_pass(p, suffix):
 
 
 def contains_streak(p):
-    for i in range(len(p) - 2):
-        if ord(p[i]) == ord(p[i + 1]) - 1 == ord(p[i + 2]) - 2:
-            return True
-    return False
+    return any(ord(a) == ord(b) - 1 == ord(c) - 2 for a, b, c in zip(p, p[1:], p[2:]))
 
 
 def part1(p):
@@ -25,7 +22,7 @@ def part1(p):
             continue
         if not contains_streak(p):
             continue
-        if not re.match(r'.*(\w)\1.*(\w)\2.*', p):
+        if len(re.findall(r'(\w)\1', p)) < 2:
             continue
         print(f'Pass found: {p}')
         return p
@@ -33,8 +30,8 @@ def part1(p):
 
 assert part1('abcdfezz') == 'abcdffaa'
 assert part1('abcdefgh') == 'abcdffaa'
-# assert part1('ghijklmn') == 'ghjaabcc'
 res1 = part1("vzbxkghb")
+assert res1 == 'vzbxxyzz'
 print(f'# Part 1: {res1}')
 print(f'# Part 2: {part1(res1)}')
 # Part 1: vzbxxyzz
