@@ -8,10 +8,7 @@ def breadth_first(obj):
     if type(obj) in (list, dict):
         iterable = obj if type(obj) == list else obj.values()
         for it in iterable:
-            if type(it) == int:
-                accum += it
-            elif type(it) in (dict, list):
-                nxt.append(it)
+            nxt.append(it)
     elif type(obj) == int:
         accum += obj
     for o in nxt:
