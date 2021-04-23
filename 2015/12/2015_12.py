@@ -5,18 +5,13 @@ import unittest
 def breadth_first(obj):
     accum = 0
     nxt = []
-    if type(obj) == dict:
-        for val in obj.values():
-            if type(val) == int:
-                accum += val
-            elif type(val) in (dict, list):
-                nxt.append(val)
-    elif type(obj) == list:
-        for val in obj:
-            if type(val) == int:
-                accum += val
-            elif type(val) in (dict, list):
-                nxt.append(val)
+    if type(obj) in (list, dict):
+        iterable = obj if type(obj) == list else obj.values()
+        for it in iterable:
+            if type(it) == int:
+                accum += it
+            elif type(it) in (dict, list):
+                nxt.append(it)
     elif type(obj) == int:
         accum += obj
     for o in nxt:
