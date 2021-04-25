@@ -2,24 +2,19 @@ import json
 import unittest
 
 
-def breadth_first(obj):
-    accum = 0
-    nxt = []
-    if type(obj) in (list, dict):
-        iterable = obj if type(obj) == list else obj.values()
-        for it in iterable:
-            nxt.append(it)
-    elif type(obj) == int:
-        accum += obj
-    for o in nxt:
-        accum += breadth_first(o)
-    return accum
+def recurse(obj):
+    if type(obj) == dict:
+        obj = list(obj.values())
+    if type(obj) == list:
+        return sum([recurse(e) for e in obj])
+    if type(obj) == int:
+        return obj
+    return 0
 
 
 def decode(string, object_hook):
-    d = json.JSONDecoder(object_hook=object_hook)
-    obj = d.decode(string)
-    res = breadth_first(obj)
+    obj = json.loads(string, object_hook=object_hook)
+    res = recurse(obj)
     # print(f'{string} -> {obj}')
     return res
 
