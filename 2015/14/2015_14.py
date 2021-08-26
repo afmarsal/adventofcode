@@ -18,7 +18,7 @@ def model_input(lines):
     return reindeers
 
 
-def solve1(lines, elapsed_sec):
+def part1(lines, elapsed_sec):
     reindeers = model_input(lines)
     result = dict()
     for reindeer, info in reindeers.items():
@@ -41,7 +41,7 @@ def is_running(sec, info):
     return 0 < sec_in_cycle <= info.run_duration
 
 
-def part1(lines, elapsed_sec):
+def part2(lines, elapsed_sec):
     reindeers = model_input(lines)
     reindeers_distances = {reindeer: 0 for reindeer in reindeers.keys()}
     reindeers_points = {reindeer: 0 for reindeer in reindeers.keys()}
@@ -58,10 +58,6 @@ def part1(lines, elapsed_sec):
     for reindeer in reindeers_points:
         reindeers_points[reindeer] += reindeers_distances[reindeer]
     return max(reindeers_points.values())
-
-
-def part2(lines):
-    return solve1(lines, True)
 
 
 class TestPart1(unittest.TestCase):
@@ -83,16 +79,31 @@ class TestPart2(unittest.TestCase):
     def test20(self):
         with open('input0.txt') as f:
             lines = f.read().splitlines()
-            self.assertEqual(part1(lines, 1), 17)
-            self.assertEqual(part1(lines, 10), 170)
-            self.assertEqual(part1(lines, 11), 187)
-            self.assertEqual(part1(lines, 1000), 1056 + 689)
+            self.assertEqual(part2(lines, 1), 17)
+            self.assertEqual(part2(lines, 10), 170)
+            self.assertEqual(part2(lines, 11), 187)
+            self.assertEqual(part2(lines, 1000), 1056 + 689)
+
+    def test_custom(self):
+        with open('input_test.txt') as f:
+            lines = f.read().splitlines()
+            # self.assertEqual(part2(lines, 1), 4)
+            # self.assertEqual(part2(lines, 2), 8)
+            self.assertEqual(part2(lines, 5), 11)
+
+    def test_custom2(self):
+        with open('input_test2.txt') as f:
+            lines = f.read().splitlines()
+            self.assertEqual(part2(lines, 1), 2)
+            self.assertEqual(part2(lines, 2), 4)
+            self.assertEqual(part2(lines, 5), 8)
+            self.assertEqual(part2(lines, 10), 16)
 
     def test2(self):
         with open('input_part1.txt') as f:
             lines = f.read().splitlines()
             # 3724 too high
-            self.assertEqual(part1(lines, 2503), 3724)
+            self.assertEqual(part2(lines, 2503), 3724)
 
 
 if __name__ == '__main__':
