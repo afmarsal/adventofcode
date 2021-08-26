@@ -1,6 +1,5 @@
 import unittest
 import re
-import itertools as it
 from collections import namedtuple
 
 regex = r'(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds\.'
@@ -43,20 +42,18 @@ def is_running(sec, info):
 
 def part2(lines, elapsed_sec):
     reindeers = model_input(lines)
+    reindeer_steps = {reindeer: [info.speed] * info.run_duration + [0] * info.rest_duration for reindeer, info in reindeers.items()}
     reindeers_distances = {reindeer: 0 for reindeer in reindeers.keys()}
-    reindeers_points = {reindeer: 0 for reindeer in reindeers.keys()}
-    for sec in range(1, elapsed_sec + 1):
+    reindeers_points = reindeers_distances.copy()
+    for sec in range(elapsed_sec):
         top_distance = 0
-        for reindeer, info in reindeers.items():
-            if is_running(sec, info):
-                reindeers_distances[reindeer] += info.speed
+        for reindeer, steps in reindeer_steps.items():
+            reindeers_distances[reindeer] += steps[sec % len(steps)]
             top_distance = max(top_distance, reindeers_distances[reindeer])
         top_reindeers = [reindeer for reindeer, distance in reindeers_distances.items() if distance == top_distance]
         for reindeer in top_reindeers:
             reindeers_points[reindeer] += 1
 
-    for reindeer in reindeers_points:
-        reindeers_points[reindeer] += reindeers_distances[reindeer]
     return max(reindeers_points.values())
 
 
@@ -79,31 +76,16 @@ class TestPart2(unittest.TestCase):
     def test20(self):
         with open('input0.txt') as f:
             lines = f.read().splitlines()
-            self.assertEqual(part2(lines, 1), 17)
-            self.assertEqual(part2(lines, 10), 170)
-            self.assertEqual(part2(lines, 11), 187)
-            self.assertEqual(part2(lines, 1000), 1056 + 689)
-
-    def test_custom(self):
-        with open('input_test.txt') as f:
-            lines = f.read().splitlines()
-            # self.assertEqual(part2(lines, 1), 4)
-            # self.assertEqual(part2(lines, 2), 8)
-            self.assertEqual(part2(lines, 5), 11)
-
-    def test_custom2(self):
-        with open('input_test2.txt') as f:
-            lines = f.read().splitlines()
-            self.assertEqual(part2(lines, 1), 2)
-            self.assertEqual(part2(lines, 2), 4)
-            self.assertEqual(part2(lines, 5), 8)
-            self.assertEqual(part2(lines, 10), 16)
+            self.assertEqual(part2(lines, 1), 1)
+            self.assertEqual(part2(lines, 10), 10)
+            self.assertEqual(part2(lines, 11), 11)
+            self.assertEqual(part2(lines, 1000), 689)
 
     def test2(self):
         with open('input_part1.txt') as f:
             lines = f.read().splitlines()
             # 3724 too high
-            self.assertEqual(part2(lines, 2503), 3724)
+            self.assertEqual(part2(lines, 2503), 1084)
 
 
 if __name__ == '__main__':
