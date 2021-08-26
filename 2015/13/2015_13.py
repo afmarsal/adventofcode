@@ -72,7 +72,7 @@ class TestPart1(unittest.TestCase):
             self.assertEqual(part1(lines), 330)
 
     def test1(self):
-        with open('input.txt') as f:
+        with open('input_part1.txt') as f:
             lines = f.read().splitlines()
             self.assertEqual(part1(lines), 664)
 
