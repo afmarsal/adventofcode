@@ -4,6 +4,7 @@ import itertools as it
 from collections import deque
 
 regex = r'(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)\.'
+SELF = 'self'
 
 
 def sort_permutation(p):
@@ -21,7 +22,7 @@ def calc_score(dq, rules):
     def next(i):
         return dq[i + 1] if i < len(dq) - 1 else dq[0]
 
-    print(f'Processing combo: {",".join(dq)}')
+    # print(f'Processing combo: {",".join(dq)}')
     total_score = 0
     for i, character in enumerate(dq):
         score1 = rules[(character, prev(i))]
@@ -33,8 +34,8 @@ def calc_score(dq, rules):
     return total_score
 
 
-def part1(lines):
-    characters, rules = make_rules(lines)
+def solve(lines, include_self):
+    characters, rules = make_rules(lines, include_self)
     seen = set()
     combos = {}
     for p in it.permutations(characters, len(characters)):
@@ -50,7 +51,15 @@ def part1(lines):
     return max(scores.values())
 
 
-def make_rules(lines):
+def part1(lines):
+    return solve(lines, False)
+
+
+def part2(lines):
+    return solve(lines, True)
+
+
+def make_rules(lines, include_self):
     def f(w):
         return 1 if w == 'gain' else -1
 
@@ -62,6 +71,12 @@ def make_rules(lines):
             raise RuntimeError(f'Invalid line {line}')
         rules[(m[1], m[4])] = f(m[2]) * int(m[3])
         characters.add(m[1])
+    if include_self:
+        for character in characters:
+            rules[character, SELF] = 0
+            rules[SELF, character] = 0
+        characters.add(SELF)
+
     return characters, rules
 
 
@@ -75,6 +90,13 @@ class TestPart1(unittest.TestCase):
         with open('input_part1.txt') as f:
             lines = f.read().splitlines()
             self.assertEqual(part1(lines), 664)
+
+
+class TestPart2(unittest.TestCase):
+    def test10(self):
+        with open('input_part2.txt') as f:
+            lines = f.read().splitlines()
+            self.assertEqual(part2(lines), 640)
 
 
 if __name__ == '__main__':
