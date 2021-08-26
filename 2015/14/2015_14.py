@@ -7,43 +7,19 @@ regex = r'(\w+) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d
 ReindeerInfo = namedtuple('ReindeerInfo', ['speed', 'run_duration', 'rest_duration'])
 
 
-def model_input(lines):
+def parse_input(lines):
     reindeers = dict()
     for line in lines:
         m = re.fullmatch(regex, line)
         if not m:
             raise RuntimeError(f'line "{line}" does not match')
-        reindeers[m[1]] = ReindeerInfo(speed=int(m[2]), run_duration=int(m[3]), rest_duration=int(m[4]))
+        reindeers[m[1]] = [int(m[2])] * int(m[3]) + [0] * int(m[4])
     return reindeers
 
 
-def part1(lines, elapsed_sec):
-    reindeers = model_input(lines)
-    result = dict()
-    for reindeer, info in reindeers.items():
-        cycle_duration = info.run_duration + info.rest_duration
-        # how many "cycles" a reindeer completes
-        complete_cycles = elapsed_sec // cycle_duration
-        complete_cycles_distance = complete_cycles * (info.run_duration * info.speed)
-
-        partial_cycles_duration = elapsed_sec % cycle_duration
-        partial_cycles_distance = info.speed * min(info.run_duration, partial_cycles_duration)
-
-        result[reindeer] = complete_cycles_distance + partial_cycles_distance
-    print(f'Results after {elapsed_sec} seconds: {result}')
-    return max(result.values())
-
-
-def is_running(sec, info):
-    cycle_duration = info.run_duration + info.rest_duration
-    sec_in_cycle = sec % cycle_duration
-    return 0 < sec_in_cycle <= info.run_duration
-
-
-def part2(lines, elapsed_sec):
-    reindeers = model_input(lines)
-    reindeer_steps = {reindeer: [info.speed] * info.run_duration + [0] * info.rest_duration for reindeer, info in reindeers.items()}
-    reindeers_distances = {reindeer: 0 for reindeer in reindeers.keys()}
+def solve(lines, elapsed_sec):
+    reindeer_steps = parse_input(lines)
+    reindeers_distances = {reindeer: 0 for reindeer in reindeer_steps.keys()}
     reindeers_points = reindeers_distances.copy()
     for sec in range(elapsed_sec):
         top_distance = 0
@@ -54,7 +30,17 @@ def part2(lines, elapsed_sec):
         for reindeer in top_reindeers:
             reindeers_points[reindeer] += 1
 
-    return max(reindeers_points.values())
+    return max(reindeers_distances.values()), max(reindeers_points.values())
+
+
+def part1(lines, elapsed_sec):
+    res = solve(lines, elapsed_sec)
+    return res[0]
+
+
+def part2(lines, elapsed_sec):
+    res = solve(lines, elapsed_sec)
+    return res[1]
 
 
 class TestPart1(unittest.TestCase):
