@@ -38,7 +38,7 @@ def parse_input(lines):
     return result
 
 
-def solve(lines, total_spoons):
+def solve(lines, total_spoons, matching_calories=None):
     teaspoons = parse_input(lines)
     results = []
     for combo in itertools.combinations_with_replacement(teaspoons.keys(), total_spoons):
@@ -46,7 +46,8 @@ def solve(lines, total_spoons):
         counter = Counter(combo)
         for ingredient, reps in counter.items():
             teaspoon_total = teaspoon_total + (teaspoons[ingredient] * reps)
-        results.append(teaspoon_total.score())
+        if matching_calories is None or teaspoon_total.calories == matching_calories:
+            results.append(teaspoon_total.score())
 
     # print(results)
     return max(results)
@@ -57,9 +58,9 @@ def part1(lines, total_spoons):
     return res
 
 
-# def part2(lines, elapsed_sec):
-#     res = solve(lines, elapsed_sec)
-#     return res[1]
+def part2(lines, elapsed_sec):
+    res = solve(lines, elapsed_sec, 500)
+    return res
 
 
 class TestPart1(unittest.TestCase):
@@ -78,16 +79,12 @@ class TestPart2(unittest.TestCase):
     def test20(self):
         with open('input0.txt') as f:
             lines = f.read().splitlines()
-            self.assertEqual(part2(lines, 1), 1)
-            self.assertEqual(part2(lines, 10), 10)
-            self.assertEqual(part2(lines, 11), 11)
-            self.assertEqual(part2(lines, 1000), 689)
+            self.assertEqual(part2(lines, 100), 57600000)
 
     def test2(self):
         with open('input_part1.txt') as f:
             lines = f.read().splitlines()
-            # 3724 too high
-            self.assertEqual(part2(lines, 2503), 1084)
+            self.assertEqual(part2(lines, 100), 11171160)
 
 
 if __name__ == '__main__':

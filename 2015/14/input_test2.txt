@@ -1,2 +1,0 @@
-Comet can fly 1 km/s for 3 seconds, but then must rest for 2 seconds.
-Dancer can fly 1 km/s for 3 seconds, but then must rest for 3 seconds.
