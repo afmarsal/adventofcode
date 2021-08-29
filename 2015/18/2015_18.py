@@ -24,7 +24,7 @@ def print_grid(step, grid):
         print(line)
 
 
-def solve(lines, steps):
+def solve(lines, steps, keep_corners=False):
     grid = parse_input(lines)
     print_grid(0, grid)
     for step in range(steps):
@@ -32,6 +32,9 @@ def solve(lines, steps):
         for i, line in enumerate(grid):
             # print(f'Step, i: {step}, {i}')
             for j, square in enumerate(grid[i]):
+                if keep_corners and (i in (0, len(grid) - 1) and j in (0, len(grid[i]) - 1)):
+                    next_grid[i][j] = '#'
+                    continue
                 neighbor_squares = get_neighbor_squares(grid, i, j)
                 if square == '#' and neighbor_squares.count('#') in (2, 3):
                     next_grid[i][j] = '#'
@@ -49,7 +52,7 @@ def part1(lines, steps):
 
 
 def part2(lines, steps):
-    return solve(lines, steps)
+    return solve(lines, steps, True)
 
 
 class TestPart1(unittest.TestCase):
@@ -58,28 +61,23 @@ class TestPart1(unittest.TestCase):
             lines = f.read().splitlines()
             self.assertEqual(part1(lines, 4), 4)
 
-    def test_perf(self):
-        with open('input_part1.txt') as f:
-            lines = f.read().splitlines()
-            self.assertEqual(part1(lines, 100), 1061)
-
     def test_input1(self):
         with open('input_part1.txt') as f:
             lines = f.read().splitlines()
             self.assertEqual(part1(lines, 100), 1061)
 
 
-# class TestPart2(unittest.TestCase):
-#     def test_sample(self):
-#         with open('input0.txt') as f:
-#             lines = f.read().splitlines()
-#             self.assertEqual(part2(lines, 25), 3)
-#
-#     def test_input1(self):
-#         with open('input_part1.txt') as f:
-#             lines = f.read().splitlines()
-#             self.assertEqual(part2(lines, 150), 4)
-#
+class TestPart2(unittest.TestCase):
+    def test_sample(self):
+        with open('input2.txt') as f:
+            lines = f.read().splitlines()
+            self.assertEqual(part2(lines, 5), 17)
+
+    def test_input1(self):
+        with open('input_part1.txt') as f:
+            lines = f.read().splitlines()
+            self.assertEqual(part2(lines, 100), 1006)
+
 
 if __name__ == '__main__':
     cProfile.run('unittest.main()')
