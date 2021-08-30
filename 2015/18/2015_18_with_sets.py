@@ -10,10 +10,7 @@ def parse_input(lines):
 
 
 def get_num_ON_neighbour(lights, i, j):
-    result = 0
-    for neighbour in all_neighbours:
-        result += 1 if (neighbour[0] + i, neighbour[1] + j) in lights else 0
-    return result
+    return sum((x, y) in lights for x in (i - 1, i, i + 1) for y in (j - 1, j, j + 1) if (i, j) != (x, y))
 
 
 def print_grid(step, lights):
@@ -31,20 +28,14 @@ def print_grid(step, lights):
 
 def solve(lines, steps, keep_corners=False):
     lights = parse_input(lines)
+    size = len(lines)
     print_grid(0, lights)
+    corners = {(0, 0), (0, len(lines) - 1), (len(lines) - 1, 0), (len(lines) - 1, len(lines) - 1)} \
+        if keep_corners else set()
     for step in range(steps):
-        new_lights = set()
-        for i in range(len(lines)):
-            for j in range(len(lines[i])):
-                num_neighbours = get_num_ON_neighbour(lights, i, j)
-                if (i, j) in lights and 2 <= num_neighbours <= 3:
-                    new_lights.add((i, j))
-                elif (i, j) not in lights and num_neighbours == 3:
-                    new_lights.add((i, j))
-        if keep_corners:
-            new_lights.update(
-                {(0, 0), (0, len(lines) - 1), (len(lines) - 1, 0), (len(lines) - 1, len(lines) - 1)})
-        lights = new_lights
+        lights = corners | {(x, y) for x in range(size) for y in range(size)
+                            if (x, y) in lights and 2 <= get_num_ON_neighbour(lights, x, y) <= 3
+                            or (x, y) not in lights and get_num_ON_neighbour(lights, x, y) == 3}
         print_grid(0, lights)
     return len(lights)
 
