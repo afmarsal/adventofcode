@@ -1,6 +1,11 @@
 import unittest
 
 
+def get_nums(filename):
+    with open(filename) as f:
+        return [int(l) for l in f.read().splitlines()]
+
+
 def part1(nums):
     ini = nums[0]
     c = 0
@@ -27,27 +32,19 @@ def part2(nums):
 
 class TestPart1(unittest.TestCase):
     def test10(self):
-        with open('input0.txt') as f:
-            nums = [int(l) for l in f.read().splitlines()]
+        nums = get_nums('input0.txt')
         self.assertEqual(part1(nums), 7)
 
     def test1(self):
-        with open('input.txt') as f:
-            nums = [int(l) for l in f.read().splitlines()]
+        nums = get_nums('input.txt')
         self.assertEqual(part1(nums), 1139)
 
 
 class TestPart2(unittest.TestCase):
     def test20(self):
-        with open('input0.txt') as f:
-            nums = [int(l) for l in f.read().splitlines()]
+        nums = get_nums('input0.txt')
         self.assertEqual(part2(nums), 5)
 
     def test21(self):
-        with open('input.txt') as f:
-            nums = [int(l) for l in f.read().splitlines()]
+        nums = get_nums('input.txt')
         self.assertEqual(part2(nums), 1103)
-
-
-def get_nums():
-    return
