@@ -7,27 +7,11 @@ def get_nums(filename):
 
 
 def part1(nums):
-    ini = nums[0]
-    c = 0
-    for l in nums[1:]:
-        if l > ini:
-            c += 1
-        ini = l
-
-    return c
+    return sum([1 if y > x else 0 for x, y in zip(nums, nums[1:])])
 
 
 def part2(nums):
-    ini = sum(nums[0:3])
-    c = 0
-    for j, __ in enumerate(nums[1:-2]):
-        i = j + 1
-        curr = sum(nums[i:i + 3])
-        # print(f'ini: {ini}, c = {c}, i = {i}, curr = {curr}')
-        if curr > ini:
-            c += 1
-        ini = curr
-    return c
+    return sum([1 if v1+v2+v3 > v0+v1+v2 else 0 for v0, v1, v2, v3 in zip(nums, nums[1:], nums[2:], nums[3:])])
 
 
 class TestPart1(unittest.TestCase):
