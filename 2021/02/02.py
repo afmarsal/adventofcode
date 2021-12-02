@@ -22,8 +22,21 @@ def part1(lines):
     return x * y
 
 
-def part2(nums):
-    return sum([1 if v1+v2+v3 > v0+v1+v2 else 0 for v0, v1, v2, v3 in zip(nums, nums[1:], nums[2:], nums[3:])])
+def part2(lines):
+    x, y, aim = 0, 0, 0
+    for l in lines:
+        instr, param = l.split()
+        if instr == 'forward':
+            x += int(param)
+            y += aim * int(param)
+        elif instr == 'down':
+            aim += int(param)
+        elif instr == 'up':
+            aim -= int(param)
+        else:
+            raise RuntimeError(f'Invalid instruction {instr}')
+
+    return x * y
 
 
 class TestPart1(unittest.TestCase):
@@ -33,14 +46,15 @@ class TestPart1(unittest.TestCase):
 
     def test1(self):
         lines = read_lines('input.txt')
-        self.assertEqual(part1(lines), 150)
+        self.assertEqual(part1(lines), 2150351)
 
 
 class TestPart2(unittest.TestCase):
     def test20(self):
         lines = read_lines('input0.txt')
-        self.assertEqual(part2(lines), 150)
+        self.assertEqual(900, part2(lines))
 
     def test21(self):
         lines = read_lines('input.txt')
-        self.assertEqual(part1(lines), 150)
+        self.assertEqual(1842742223, part2(lines))
+# 2150351 too low
