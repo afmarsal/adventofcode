@@ -13,7 +13,7 @@ def part1(file_name):
     lines = read_lines(file_name).transpose()
     # for each column, shift and accumulate 1 or 0 depending on count of 1's or 0's
     gamma = functools.reduce(lambda accum, line: (accum << 1) + (line[line == '1'].size > len(line)/2), lines, 0)
-    # epsilon is the "negated" value of gamma, but needs to be masked to the lenght of the number
+    # epsilon is the "negated" value of gamma, but needs to be masked to the length of the number
     mask = ~(~0 << len(lines))
     epsilon = ~gamma & mask
     print(f'Gamma: {gamma}, Epsilon: {epsilon}')
