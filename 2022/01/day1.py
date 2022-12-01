@@ -1,26 +1,32 @@
 import unittest
 
 
-def get_nums(filename):
+# def get_nums(filename):
+#     with open(filename) as f:
+#         return [[int(n) for n in l.splitlines()] for l in f.read().split('\n\n')]
+
+
+def get_sums(filename):
     with open(filename) as f:
-        return [[int(n) for n in l.splitlines()] for l in f.read().split('\n\n')]
+        return [sum([int(n) for n in l.splitlines()]) for l in f.read().split('\n\n')]
 
 
-def day1(chunks):
-    return max([sum(chunk) for chunk in chunks])
+def day1(filename):
+    return max(get_sums(filename))
 
 
-def day2(chunks):
-    return sum(sorted([sum(chunk) for chunk in chunks])[-3:])
+def day2(filename):
+    print(get_sums(filename))
+    return sum(sorted(get_sums(filename))[-3:])
 
 
 class TestPart1(unittest.TestCase):
-    def test0(self):
-        nums = get_nums('sample.txt')
-        self.assertEqual(day1(nums), 24000)
-        self.assertEqual(day2(nums), 45000)
+    def test_sample(self):
+        f = 'sample.txt'
+        self.assertEqual(24000, day1(f))
+        self.assertEqual(45000, day2(f))
 
-    def test1(self):
-        nums = get_nums('input.txt')
-        self.assertEqual(day1(nums), 69281)
-        self.assertEqual(day2(nums), 201524)
+    def test_input(self):
+        f = 'input.txt'
+        self.assertEqual(69281, day1(f))
+        self.assertEqual(201524, day2(f))
