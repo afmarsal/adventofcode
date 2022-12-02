@@ -11,14 +11,16 @@ def read(filename):
         return [tuple(n for n in l.split()) for l in f.read().splitlines()]
 
 def play(m):
+    # ord(g[1]) - ord('X') + 1 gives the score of the chosen shape
     return sum([MAPPINGS[g[0]][g[1]] + ord(g[1]) - ord('X') + 1 for g in m])
 
 def day1(filename):
     return play(read(filename))
 
 def day2(filename):
-    new_input = [[g[0], (MAPPINGS[g[0]][(3 * (ord(g[1]) - ord('X')))])] for g in read(filename)]
-    return play(new_input)
+    # 3 * ord(g[1]) - ord('X') gives the required score
+    required_shapes = [[g[0], (MAPPINGS[g[0]][(3 * (ord(g[1]) - ord('X')))])] for g in read(filename)]
+    return play(required_shapes)
 
 
 class TestPart1(unittest.TestCase):
