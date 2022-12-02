@@ -1,9 +1,10 @@
 import unittest
 
 RESULTS = {
-    'A': {'X': 3, 'Y': 6, 'Z': 0},
-    'B': {'X': 0, 'Y': 3, 'Z': 6},
-    'C': {'X': 6, 'Y': 0, 'Z': 3}}
+    'A': {'X': 3, 'Y': 6, 'Z': 0, 3: 'X', 6: 'Y', 0: 'Z'},
+    'B': {'X': 0, 'Y': 3, 'Z': 6, 0: 'X', 3: 'Y', 6: 'Z'},
+    'C': {'X': 6, 'Y': 0, 'Z': 3, 6: 'X', 0: 'Y', 3: 'Z'}
+}
 
 def read(filename):
     with open(filename) as f:
