@@ -19,7 +19,7 @@ def day1(filename):
 
 def day2(filename):
     # 3 * ord(g[1]) - ord('X') gives the required score
-    required_shapes = [[g[0], (MAPPINGS[g[0]][(3 * (ord(g[1]) - ord('X')))])] for g in read(filename)]
+    required_shapes = [(g[0], MAPPINGS[g[0]][(3 * (ord(g[1]) - ord('X')))]) for g in read(filename)]
     return play(required_shapes)
 
 
