@@ -21,7 +21,6 @@ class TestPart1(unittest.TestCase):
 
     def test_input(self):
         self.assertEqual(471, day1('input.txt'))
-        z
 
 
 class TestPart2(unittest.TestCase):
