@@ -11,10 +11,12 @@ def count_trues(filename, f):
     return [f(p1, p2) for p1, p2 in read_ranges(filename)].count(True)
 
 def day1(filename):
-    return count_trues(filename, lambda p1, p2: p1[0] <= p2[0] <= p2[1] <= p1[1] or p2[0] <= p1[0] <= p1[1] <= p2[1])
+    return count_trues(filename,
+                       lambda p1, p2: p1[0] <= p2[0] <= p2[1] <= p1[1] or p2[0] <= p1[0] <= p1[1] <= p2[1])
 
 def day2(filename):
-    return count_trues(filename, lambda p1, p2: max(p1[0], p2[0]) <= min(p1[1], p2[1]))
+    return count_trues(filename,
+                       lambda p1, p2: max(p1[0], p2[0]) <= min(p1[1], p2[1]))
 
 
 class TestPart1(unittest.TestCase):
