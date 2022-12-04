@@ -7,7 +7,6 @@ def read_ranges(filename):
 
 
 def day1(filename):
-    print(list(read_ranges(filename)))
     res = 0
     for rng1, rng2 in read_ranges(filename):
         start1, end1 = rng1.split("-")
@@ -19,7 +18,14 @@ def day1(filename):
     return res
 
 def day2(filename):
-    return -1
+    res = 0
+    for rng1, rng2 in read_ranges(filename):
+        start1, end1 = rng1.split("-")
+        start2, end2 = rng2.split("-")
+        new_range1 = set(range(int(start1), int(end1)+1))
+        new_range2 = set(range(int(start2), int(end2)+1))
+        res += 1 if len(new_range1.intersection(new_range2)) > 0 else 0
+    return res
 
 
 class TestPart1(unittest.TestCase):
@@ -31,7 +37,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(70, day2('sample.txt'))
+        self.assertEqual(4, day2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(2567, day2('input.txt'))
+        self.assertEqual(888, day2('input.txt'))
