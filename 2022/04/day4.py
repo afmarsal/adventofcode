@@ -1,10 +1,11 @@
 import unittest
 import itertools as it
 
+
 def read_ranges(filename):
-    to_set = lambda p: set(range(int(p[0]), int(p[1])+1))
+    to_set = lambda p: set(range(int(p[0]), int(p[1]) + 1))
     with open(filename) as f:
-        return [(to_set(r1.split('-')), to_set(r2.split('-'))) \
+        return [(to_set(r1.split('-')), to_set(r2.split('-')))
                 for r1, r2 in it.chain([line.split(",") for line in f.read().splitlines()])]
 
 def day1(filename):
@@ -20,6 +21,8 @@ class TestPart1(unittest.TestCase):
 
     def test_input(self):
         self.assertEqual(471, day1('input.txt'))
+        z
+
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
