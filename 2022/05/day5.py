@@ -1,28 +1,18 @@
 import re
 import unittest
-import numpy as np
 
 
-def read_crates(filename):
-    columns = []
-    with open(filename) as f:
-        for line in f.read().splitlines():
-            row = line[1::4]
-            columns.append(np.array(list(row)))
-        arr = np.array(columns).transpose()
-        return [list(''.join(col).strip()) for col in arr.tolist()]
-
-def read_moves(moves_file):
-    moves = []
+def read_crates(crates_file, moves_file):
+    with open(crates_file) as f:
+        columns = [list(line[1::4]) for line in f.read().splitlines()]
+        arr = list(map(list, zip(*columns)))  # transpose
+        crates = [[c for c in col if c != ' '] for col in arr]  # filter ' '
     with open(moves_file) as f:
-        for line in f.read().splitlines():
-            moves.append(list(map(int, re.findall(r"\d+", line))))
-    return moves
-
+        moves = [list(map(int, re.findall(r"\d+", line))) for line in f.read().splitlines()]
+    return crates, moves
 
 def day1(crates_file, moves_file):
-    crates = read_crates(crates_file)
-    moves = read_moves(moves_file)
+    crates, moves = read_crates(crates_file, moves_file)
     for move in moves:
         for i in range(int(move[0])):
             crates[move[2]-1].insert(0, crates[move[1]-1].pop(0))
@@ -30,8 +20,7 @@ def day1(crates_file, moves_file):
 
 
 def day2(crates_file, moves_file):
-    crates = read_crates(crates_file)
-    moves = read_moves(moves_file)
+    crates, moves = read_crates(crates_file, moves_file)
     for move in moves:
         crates[move[2] - 1][:0] = crates[move[1] - 1][:move[0]]
         crates[move[1] - 1][0:move[0]] = []
