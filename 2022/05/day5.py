@@ -12,7 +12,7 @@ def read(crates_file, moves_file):
         moves = [list(map(int, re.findall(r"\d+", line))) for line in f.read().splitlines()]
     return crates, moves
 
-def day1(crates_file, moves_file):
+def part1(crates_file, moves_file):
     crates, moves = read(crates_file, moves_file)
     for move in moves:
         for i in range(int(move[0])):
@@ -20,7 +20,7 @@ def day1(crates_file, moves_file):
     return ''.join([c[0] for c in crates])
 
 
-def day2(crates_file, moves_file):
+def part2(crates_file, moves_file):
     crates, moves = read(crates_file, moves_file)
     for move in moves:
         crates[move[2]-1][:0] = crates[move[1]-1][:move[0]]
@@ -30,15 +30,15 @@ def day2(crates_file, moves_file):
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual('CMZ', day1('sample_0.txt', 'sample_1.txt'))
+        self.assertEqual('CMZ', part1('sample_0.txt', 'sample_1.txt'))
 
     def test_input(self):
-        self.assertEqual('QNNTGTPFN', day1('input_0.txt', 'input_1.txt'))
+        self.assertEqual('QNNTGTPFN', part1('input_0.txt', 'input_1.txt'))
 
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual('MCD', day2('sample_0.txt', 'sample_1.txt'))
+        self.assertEqual('MCD', part2('sample_0.txt', 'sample_1.txt'))
 
     def test_input(self):
-        self.assertEqual('GGNPJBTTR', day2('input_0.txt', 'input_1.txt'))
+        self.assertEqual('GGNPJBTTR', part2('input_0.txt', 'input_1.txt'))
