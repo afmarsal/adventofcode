@@ -6,51 +6,40 @@ def read(filename):
     with open(filename) as f:
         return f.read().splitlines()
 
-CD_OUT = re.compile(r"\$ cd \.\.")
-CD_IN = re.compile(r"\$ cd (\w+)")
-A_DIR = re.compile(r"dir (\w+)")
-A_FILE = re.compile(r"(\d+) (\w+)")
-
-NAME = 0
-SIZE = 1
-PARENT = 2
-CHILDREN = 3
-
-
 def log(param):
     # print(param)
     pass
 
+NAME = 0
+SIZE = 1
+
 def parse_fs(lines):
     fs = dict()
-    # dir name, size, parent, children
-    curr_dir = ["/", 0, None, []]
+    # dir name, size
+    curr_dir = ["/", 0]
     fs["/"] = curr_dir
     pwd = [curr_dir]
     for line in lines[1:]:  # skip first line, which is always "cd /"
-        # Don't care about ls and dirs
+        match line.split():
+            case ['$', 'ls'] | ['dir', _]:
+                continue
 
-        a_file = A_FILE.match(line)
-        if a_file:
-            size = int(a_file.group(1))
-            for dir in pwd:
-                dir[SIZE] += size
-                log("Added size {}. New size: [{}]={}".format(size, dir[NAME], dir[SIZE]))
-            continue
+            case ['$', 'cd', '..']:
+                pwd.pop()
+                curr_dir = pwd[len(pwd) - 1]
+                log("Leaving dir. Curr dir {}".format(curr_dir[NAME]))
 
-        cd_in = CD_IN.match(line)
-        if cd_in:
-            dir_name = curr_dir[NAME] + cd_in.group(1) + "/"
-            curr_dir = [dir_name, 0, curr_dir[NAME], []]
-            pwd.append(curr_dir)
-            fs[dir_name] = curr_dir
-            log("Entering dir {}".format(curr_dir[NAME]))
-            continue
+            case ['$', 'cd', dir_name]:
+                dir_name = curr_dir[NAME] + dir_name + "/"
+                curr_dir = [dir_name, 0, curr_dir[NAME], []]
+                pwd.append(curr_dir)
+                fs[dir_name] = curr_dir
+                log("Entering dir {}".format(curr_dir[NAME]))
 
-        if CD_OUT.match(line):
-            pwd.pop()
-            curr_dir = pwd[len(pwd)-1]
-            log("Leaving dir. Curr dir {}".format(curr_dir[NAME]))
+            case [size, _]:
+                for dir in pwd:
+                    dir[SIZE] += int(size)
+                    log("Added size {}. New size: [{}]={}".format(size, dir[NAME], dir[SIZE]))
 
     return fs
 
@@ -70,6 +59,7 @@ class TestPart1(unittest.TestCase):
 
     def test_input(self):
         self.assertEqual(1908462, part1('input.txt'))
+
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
