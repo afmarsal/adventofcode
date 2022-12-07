@@ -18,14 +18,14 @@ CHILDREN = 3
 
 
 def log(param):
-    print(param)
+    # print(param)
     pass
 
 def parse_fs(lines):
-    dirs = dict()
+    fs = dict()
     # dir name, size, parent, children
     curr_dir = ["/", 0, None, []]
-    dirs["/"] = curr_dir
+    fs["/"] = curr_dir
     pwd = [curr_dir]
     for line in lines[1:]:  # skip first line, which is always "cd /"
         if line == "$ ls":
@@ -50,9 +50,9 @@ def parse_fs(lines):
             dir_name = curr_dir[NAME] + cd_in.group(1) + "/"
             curr_dir = [dir_name, 0, curr_dir[NAME], []]
             pwd.append(curr_dir)
-            if dir_name in dirs:
+            if dir_name in fs:
                 raise Exception("{} already exist".format(dir_name))
-            dirs[dir_name] = curr_dir
+            fs[dir_name] = curr_dir
             log("Entering dir {}".format(curr_dir[NAME]))
             continue
 
@@ -61,14 +61,16 @@ def parse_fs(lines):
             curr_dir = pwd[len(pwd)-1]
             log("Leaving dir. Curr dir {}".format(curr_dir[NAME]))
 
-    return dirs
+    return fs
 
 def part1(filename):
     fs = parse_fs(read(filename))
     return sum([dir[SIZE] for dir in fs.values() if dir[SIZE] <= 100000])
 
 def part2(filename):
-    return -1
+    fs = parse_fs(read(filename))
+    free = 70000000 - fs["/"][SIZE]
+    return min([dir[SIZE] for dir in fs.values() if dir[SIZE] >= (30000000 - free)])
 
 
 class TestPart1(unittest.TestCase):
@@ -76,11 +78,11 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(95437, part1('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(1
+        self.assertEqual(1908462, part1('input.txt'))
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(70, part2('sample.txt'))
+        self.assertEqual(24933642, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(2567, part2('input.txt'))
+        self.assertEqual(3979145, part2('input.txt'))
