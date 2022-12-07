@@ -28,14 +28,7 @@ def parse_fs(lines):
     fs["/"] = curr_dir
     pwd = [curr_dir]
     for line in lines[1:]:  # skip first line, which is always "cd /"
-        if line == "$ ls":
-            continue
-
-        a_dir = A_DIR.match(line)
-        if a_dir:
-            # Don't care for now
-            log("There's a dir {}".format(a_dir.group(1)))
-            continue
+        # Don't care about ls and dirs
 
         a_file = A_FILE.match(line)
         if a_file:
@@ -50,8 +43,6 @@ def parse_fs(lines):
             dir_name = curr_dir[NAME] + cd_in.group(1) + "/"
             curr_dir = [dir_name, 0, curr_dir[NAME], []]
             pwd.append(curr_dir)
-            if dir_name in fs:
-                raise Exception("{} already exist".format(dir_name))
             fs[dir_name] = curr_dir
             log("Entering dir {}".format(curr_dir[NAME]))
             continue
