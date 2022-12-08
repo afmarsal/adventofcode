@@ -37,7 +37,6 @@ def scenic_score(forest, y, x):
     dist_down  = view(forest[y+1:-1, x], forest[y, x])
     return dist_left * dist_right * dist_up * dist_down
 
-
 def part2(filename):
     forest = np.array(read(filename))
     return max(scenic_score(forest, y, x)
