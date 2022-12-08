@@ -1,5 +1,6 @@
-import unittest
 import itertools as it
+import unittest
+import numpy as np
 
 def read(filename):
     with open(filename) as f:
@@ -9,45 +10,43 @@ def log(param):
     print(param)
     pass
 
+
+def vis(line, tree):
+    return all(tree > l for l in line)
+
+
+def visible(forest, y, x):
+    vis_left = vis(forest[y, :x], forest[y, x])
+    vis_right = vis(forest[y, x + 1:], forest[y, x])
+    vis_up = vis(forest[:y, x], forest[y, x])
+    vis_down = vis(forest[y + 1:, x], forest[y, x])
+    return vis_left or vis_right or vis_up or vis_down
+
+
 def part1(filename):
-    result = 0
-    forest = read(filename)
-    for y in range(len(forest)):
-        for x in range(len(forest[y])):
-            tree = forest[y][x]
-            visible = all(tree > forest[y][i] for i in range(x))
-            visible = visible or all(tree > forest[y][i] for i in range(x + 1, len(forest[y])))
-            visible = visible or all(tree > forest[i][x] for i in range(y))
-            visible = visible or all(tree > forest[i][x] for i in range(y + 1, len(forest)))
-            result += int(visible)
-    return result
+    forest = np.array(read(filename))
+    edges = (len(forest)-1) * 2 + (len(forest[0])-1) * 2
+    return edges + sum([int(visible(forest, y, x))
+                        for y in range(1, len(forest) - 1)
+                        for x in range(1, len(forest[y]) - 1)])
 
-def dist(forest, x, y, ry, rx):
-    result = 1
-    for j in ry:
-        for i in rx:
-            if forest[y][x] <= forest[j][i]:
-                break
-            result += 1
-        else:
-            continue
-        break
-    return result
+def view(line, tree):
+    # Adding + 1 to count for the blocking tree. If no blocking, then it accounts for the edge
+    return len(list(it.takewhile(lambda v: v < tree, line))) + 1
 
-def score(forest, y, x):
-    dist_left = dist(forest, x, y, [y], range(x - 1, 0, -1))
-    dist_right = dist(forest, x, y, [y], range(x + 1, len(forest[y]) - 1))
-    dist_up = dist(forest, x, y, range(y - 1, 0, -1), [x])
-    dist_down = dist(forest, x, y, range(y + 1, len(forest) - 1), [x])
-    result = dist_left * dist_right * dist_up * dist_down
-    # log("{}, {}: {} -> {}, {}, {}, {} => {}".format(x, y, forest[y][x], dist_up, dist_left, dist_down,
-    # dist_right, result))
-    return result
+def scenic_score(forest, y, x):
+    dist_left = view(forest[y, x - 1:0:-1], forest[y, x])
+    dist_right = view(forest[y, x + 1:-1], forest[y, x])
+    dist_up = view(forest[y - 1:0:-1, x], forest[y, x])
+    dist_down = view(forest[y + 1:-1, x], forest[y, x])
+    return dist_left * dist_right * dist_up * dist_down
 
 
 def part2(filename):
-    forest = read(filename)
-    return max(score(forest, y, x) for y in range(1, len(forest) - 1) for x in range(1, len(forest[y]) - 1))
+    forest = np.array(read(filename))
+    return max(scenic_score(forest, y, x)
+               for y in range(1, len(forest) - 1)
+               for x in range(1, len(forest[y]) - 1))
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
@@ -62,5 +61,4 @@ class TestPart2(unittest.TestCase):
         self.assertEqual(8, part2('sample.txt'))
 
     def test_input(self):
-        # 20, 72, 120, 216 not!
         self.assertEqual(345168, part2('input.txt'))
