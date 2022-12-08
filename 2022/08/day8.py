@@ -1,4 +1,5 @@
 import unittest
+import itertools as it
 
 def read(filename):
     with open(filename) as f:
@@ -21,39 +22,32 @@ def part1(filename):
             result += int(visible)
     return result
 
+def dist(forest, x, y, ry, rx):
+    result = 1
+    for j in ry:
+        for i in rx:
+            if forest[y][x] <= forest[j][i]:
+                break
+            result += 1
+        else:
+            continue
+        break
+    return result
 
 def score(forest, y, x):
-    if y == 0 or x == 0 or y == len(forest) - 1 or x == len(forest[y]) - 1:
-        return 0
-    tree = forest[y][x]
-    dist_left = 1
-    for i in range(x-1, 0, -1):
-        if tree <= forest[y][i]:
-            break
-        dist_left += 1
-    dist_right = 1
-    for i in range(x+1, len(forest[y])-1):
-        if tree <= forest[y][i]:
-            break
-        dist_right += 1
-    dist_up = 1
-    for i in range(y-1, 0, -1):
-        if tree <= forest[i][x]:
-            break
-        dist_up += 1
-    dist_down = 1
-    for i in range(y+1, len(forest)-1):
-        if tree <= forest[i][x]:
-            break
-        dist_down += 1
+    dist_left = dist(forest, x, y, [y], range(x - 1, 0, -1))
+    dist_right = dist(forest, x, y, [y], range(x + 1, len(forest[y]) - 1))
+    dist_up = dist(forest, x, y, range(y - 1, 0, -1), [x])
+    dist_down = dist(forest, x, y, range(y + 1, len(forest) - 1), [x])
     result = dist_left * dist_right * dist_up * dist_down
-    log("{}, {}: {} -> {}, {}, {}, {} => {}".format(x, y, forest[y][x], dist_up, dist_left, dist_down, dist_right, result))
+    # log("{}, {}: {} -> {}, {}, {}, {} => {}".format(x, y, forest[y][x], dist_up, dist_left, dist_down,
+    # dist_right, result))
     return result
 
 
 def part2(filename):
     forest = read(filename)
-    return max(score(forest, y, x) for y in range(len(forest)) for x in range(len(forest[y])))
+    return max(score(forest, y, x) for y in range(1, len(forest) - 1) for x in range(1, len(forest[y]) - 1))
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
