@@ -1,3 +1,4 @@
+import itertools
 import itertools as it
 import operator
 import unittest
@@ -45,16 +46,13 @@ def part1(filename):
     return len(visited)
 
 def part2(filename):
-    s = (0, 0)
-    knots = [s] * 9
-    visited = {s}
+    knots = [(0, 0)] * 10
+    visited = {(0, 0)}
     for direction, steps in read(filename):
         for i in range(int(steps)):
-            s = move(s, STEPS[direction])
-            prev_knot = s
-            for j in range(len(knots)):
-                knots[j] = follow(knots[j], prev_knot)
-                prev_knot = knots[j]
+            knots[0] = move(knots[0], STEPS[direction])
+            for prev, knot in itertools.pairwise(range(len(knots))):
+                knots[knot] = follow(knots[knot], knots[prev])
             visited.add(knots[len(knots)-1])
     return len(visited)
 
