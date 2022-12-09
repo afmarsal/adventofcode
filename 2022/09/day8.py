@@ -1,8 +1,6 @@
 import itertools
-import itertools as it
 import operator
 import unittest
-import numpy as np
 from numpy import sign
 
 
@@ -35,26 +33,22 @@ def follow(t, s):
     move_y = sign(s[1] - t[1])
     return move(t, (move_x, move_y))
 
-def part1(filename):
-    s = t = (0, 0)
-    visited = {t}
-    for direction, steps in read(filename):
-        for i in range(int(steps)):
-            s = move(s, STEPS[direction])
-            t = follow(t, s)
-            visited.add(t)
-    return len(visited)
-
-def part2(filename):
-    knots = [(0, 0)] * 10
-    visited = {(0, 0)}
-    for direction, steps in read(filename):
-        for i in range(int(steps)):
+def whip(filename, tail_size):
+    knots = [(0, 0)] * tail_size  # list of knot positions [(0,0), (0,0)...]
+    visited = set()
+    for direction, num_steps in read(filename):
+        for i in range(int(num_steps)):
             knots[0] = move(knots[0], STEPS[direction])
             for prev, knot in itertools.pairwise(range(len(knots))):
                 knots[knot] = follow(knots[knot], knots[prev])
             visited.add(knots[len(knots)-1])
     return len(visited)
+
+def part1(filename):
+    return whip(filename, 2)
+
+def part2(filename):
+    return whip(filename, 10)
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
