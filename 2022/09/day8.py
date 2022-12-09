@@ -49,10 +49,26 @@ def part1(filename):
     return len(visited)
 
 def part2(filename):
-    forest = np.array(read(filename))
-    return max(scenic_score(forest, y, x)
-               for y in range(1, len(forest) - 1)
-               for x in range(1, len(forest[y]) - 1))
+    s = (0, 0)
+    knots = [s] * 9
+    visited = {s}
+    for direction, steps in read(filename):
+        for i in range(int(steps)):
+            match direction:
+                case 'R':
+                    s = move(s, 1, 0)
+                case 'L':
+                    s = move(s, -1, 0)
+                case 'U':
+                    s = move(s, 0, 1)
+                case 'D':
+                    s = move(s, 0, -1)
+            prev_knot = s
+            for j in range(len(knots)):
+                knots[j] = follow(knots[j], prev_knot)
+                prev_knot = knots[j]
+            visited.add(knots[len(knots)-1])
+    return len(visited)
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
@@ -65,6 +81,7 @@ class TestPart1(unittest.TestCase):
 class TestPart2(unittest.TestCase):
     def test_sample(self):
         self.assertEqual(1, part2('sample.txt'))
+        self.assertEqual(36, part2('sample2.txt'))
 
     def test_input(self):
-        self.assertEqual(345168, part2('input.txt'))
+        self.assertEqual(2273, part2('input.txt'))
