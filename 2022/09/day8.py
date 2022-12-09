@@ -14,36 +14,32 @@ def log(param):
     pass
 
 
-def move(s, step_x, step_y):
-    return tuple(map(operator.add, s, (step_x, step_y)))
+STEPS = {
+    'R': (1, 0),
+    'L': (-1, 0),
+    'U': (0, 1),
+    'D': (0, -1)
+}
 
+def move(s, step):
+    return tuple(map(operator.add, s, (step[0], step[1])))
 
 def dist(t, s):
     return max(abs(s[0]-t[0]), abs(s[1]-t[1]))
-
 
 def follow(t, s):
     if dist(t, s) <= 1:
         return t
     move_x = sign(s[0] - t[0])
     move_y = sign(s[1] - t[1])
-    t = move(t, move_x, move_y)
-    return t
+    return move(t, (move_x, move_y))
 
 def part1(filename):
     s = t = (0, 0)
     visited = {t}
     for direction, steps in read(filename):
         for i in range(int(steps)):
-            match direction:
-                case 'R':
-                    s = move(s, 1, 0)
-                case 'L':
-                    s = move(s, -1, 0)
-                case 'U':
-                    s = move(s, 0, 1)
-                case 'D':
-                    s = move(s, 0, -1)
+            s = move(s, STEPS[direction])
             t = follow(t, s)
             visited.add(t)
     return len(visited)
@@ -54,15 +50,7 @@ def part2(filename):
     visited = {s}
     for direction, steps in read(filename):
         for i in range(int(steps)):
-            match direction:
-                case 'R':
-                    s = move(s, 1, 0)
-                case 'L':
-                    s = move(s, -1, 0)
-                case 'U':
-                    s = move(s, 0, 1)
-                case 'D':
-                    s = move(s, 0, -1)
+            s = move(s, STEPS[direction])
             prev_knot = s
             for j in range(len(knots)):
                 knots[j] = follow(knots[j], prev_knot)
