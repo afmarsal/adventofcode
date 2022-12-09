@@ -21,7 +21,7 @@ STEPS = {
 }
 
 def move(s, step):
-    return tuple(map(operator.add, s, (step[0], step[1])))
+    return s[0] + step[0], s[1] + step[1]
 
 def dist(t, s):
     return max(abs(s[0]-t[0]), abs(s[1]-t[1]))
