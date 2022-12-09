@@ -33,7 +33,7 @@ def follow(t, s):
     move_y = sign(s[1] - t[1])
     return move(t, (move_x, move_y))
 
-def whip(filename, tail_size):
+def rope(filename, tail_size):
     knots = [(0, 0)] * tail_size  # list of knot positions [(0,0), (0,0)...]
     visited = set()
     for direction, num_steps in read(filename):
@@ -45,10 +45,10 @@ def whip(filename, tail_size):
     return len(visited)
 
 def part1(filename):
-    return whip(filename, 2)
+    return rope(filename, 2)
 
 def part2(filename):
-    return whip(filename, 10)
+    return rope(filename, 10)
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
