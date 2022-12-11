@@ -16,37 +16,17 @@ def read(filename):
             monkeys.append(attrs)
     return monkeys
 
-def part1(filename):
-    monkeys = read(filename)
-    for round in range(20):
-        for monkey in monkeys:
-            for item in monkey['items']:
-                monkey['inspected'] += 1
-                op1 = int(item) if monkey['op'][0] == 'old' else int(monkey['op'][0])
-                op2 = int(item) if monkey['op'][2] == 'old' else int(monkey['op'][2])
-                new_level = op1 * op2 if monkey['op'][1] == '*' else op1 + op2
-                new_level = new_level // 3
-                if new_level % monkey['div'] == 0:
-                    monkeys[monkey['true']]['items'].append(new_level)
-                else:
-                    monkeys[monkey['false']]['items'].append(new_level)
-            monkey['items'] = []
-    inspections = [monkey['inspected'] for monkey in monkeys]
-    inspections.sort()
-    return inspections[-1] * inspections[-2]
-
-
-def part2(filename):
+def calc(filename, rounds):
     monkeys = read(filename)
     mcm = numpy.prod([monkey['div'] for monkey in monkeys])
-    for round in range(10000):
+    for round in range(rounds):
         for monkey in monkeys:
             for item in monkey['items']:
                 monkey['inspected'] += 1
                 op1 = int(item) if monkey['op'][0] == 'old' else int(monkey['op'][0])
                 op2 = int(item) if monkey['op'][2] == 'old' else int(monkey['op'][2])
                 new_level = op1 * op2 if monkey['op'][1] == '*' else op1 + op2
-                new_level = new_level % mcm
+                new_level = new_level // 3 if rounds == 20 else new_level % mcm
                 if new_level % monkey['div'] == 0:
                     monkeys[monkey['true']]['items'].append(new_level)
                 else:
@@ -55,6 +35,12 @@ def part2(filename):
     inspections = [monkey['inspected'] for monkey in monkeys]
     inspections.sort()
     return inspections[-1] * inspections[-2]
+
+def part1(filename):
+    return calc(filename, 20)
+
+def part2(filename):
+    return calc(filename, 10000)
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
