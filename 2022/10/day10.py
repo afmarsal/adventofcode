@@ -43,7 +43,7 @@ def part1(filename):
 def part2(filename):
     cycle = 1
     rx = 1
-    crt = [['.' for i in range(40)] for j in range(6)]
+    crt = [[' ' for i in range(40)] for j in range(6)]
     for instr in read(filename):
         cycles_left = 1
         cycling = False
@@ -55,7 +55,7 @@ def part2(filename):
                         cycling = True
             crt_y, crt_x = divmod(cycle - 1, 40)
             if crt_x in {rx - 1, rx, rx + 1}:
-                crt[crt_y][crt_x] = '▮'
+                crt[crt_y][crt_x] = '█'
             cycles_left -= 1
             cycle += 1
         match instr:
