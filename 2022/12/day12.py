@@ -119,7 +119,11 @@ def part2(filename):
             graph.add_edge(curr, n)
     paths = []
     for a in find_all(grid, 'a'):
-        shortest_path = nx.algorithms.shortest_path(graph, e_pos, a)
+        try:
+            shortest_path = nx.algorithms.shortest_path(graph, e_pos, a)
+        except Exception as e:
+            log('Exception with node {}: {}'.format(a, e))
+
         log('Route {} -> {}\nPath {}: {}'.format(e_pos, a, len(shortest_path), shortest_path))
         paths.append(shortest_path)
     return min(len(path) for path in paths) - 1
