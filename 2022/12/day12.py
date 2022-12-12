@@ -18,13 +18,10 @@ RIGHT = (0, 1)
 LEFT = (0, -1)
 
 def find(grid, char):
-    for k, v in grid.items():
-        if v == char:
-            return k
+    return find_all(grid, char)[0]
 
 def find_all(grid, char):
     return [k for k, v in grid.items() if v == char]
-
 
 def find_neighbors1(grid, node):
     result = set()
