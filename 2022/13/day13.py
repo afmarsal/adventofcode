@@ -57,7 +57,6 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(13, part1('sample.txt'))
 
     def test_input(self):
-        # 820 NO!
         self.assertEqual(5506, part1('input.txt'))
 
 class TestPart2(unittest.TestCase):
