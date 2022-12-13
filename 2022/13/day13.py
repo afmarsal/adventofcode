@@ -1,23 +1,23 @@
 import unittest
-
+from functools import cmp_to_key
 from numpy import sign
 
 
 def read(filename):
     res = []
     with open(filename) as f:
-        for pair in f.read().split('\n\n'):
-            # print(pair)
-            # print()
-            # print('#{}#'.format(pair))
-            # print('#{}#'.format(pair.splitlines()))
-            l1, l2 = pair.splitlines()
-            res.append((eval(l1), eval(l2)))
-        return res
+        # for pair in f.read().split('\n\n'):
+        #     # print(pair)
+        #     # print()
+        #     # print('#{}#'.format(pair))
+        #     # print('#{}#'.format(pair.splitlines()))
+        #     l1, l2 = pair.splitlines()
+        #     res.append((eval(l1), eval(l2)))
+        # return res
         return [(eval(l1), eval(l2)) for pair in f.read().split('\n\n') for l1, l2 in pair.splitlines()]
 
 def log(param):
-    print(param)
+    # print(param)
     pass
 
 
@@ -72,7 +72,16 @@ def part1(filename):
     return result
 
 def part2(filename):
-    return -1
+    pairs = read(filename)
+    packets = [p for pair in pairs for p in pair]
+    packets.append([[2]])
+    packets.append([[6]])
+    # print('\n'.join(packets))
+    sorted_packets = sorted(packets, key=cmp_to_key(compare), reverse=True)
+    # print('\n'.join(sorted_packets))
+    idx2 = sorted_packets.index([[2]])
+    idx6 = sorted_packets.index([[6]])
+    return (idx2+1) * (idx6+1)
 
 
 class TestPart1(unittest.TestCase):
@@ -85,7 +94,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(140, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(21756, part2('input.txt'))
