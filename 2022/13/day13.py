@@ -4,17 +4,8 @@ from numpy import sign
 
 
 def read(filename):
-    res = []
     with open(filename) as f:
-        # for pair in f.read().split('\n\n'):
-        #     # print(pair)
-        #     # print()
-        #     # print('#{}#'.format(pair))
-        #     # print('#{}#'.format(pair.splitlines()))
-        #     l1, l2 = pair.splitlines()
-        #     res.append((eval(l1), eval(l2)))
-        # return res
-        return [(eval(l1), eval(l2)) for pair in f.read().split('\n\n') for l1, l2 in pair.splitlines()]
+        return [(eval(pair.splitlines()[0]), eval(pair.splitlines()[1])) for pair in f.read().split('\n\n')]
 
 def log(param):
     # print(param)
