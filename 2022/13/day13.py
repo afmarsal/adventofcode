@@ -18,53 +18,35 @@ def compare(left, right):
             return -1
 
         if type(left[i]) == int and type(right[i]) == int:
-            if left[i] == right[i]:
-                continue
+            if left[i] != right[i]:
+                return sign(right[i] - left[i])
             else:
-                result = sign(right[i] - left[i])
-                return result
+                continue
 
-        if type(left[i]) == list and type(right[i]) == list:
-            result = compare(left[i], right[i])
-            if result != 0:
-                return result
-            continue
+        new_left = left[i]
+        new_right = right[i]
+        if type(left[i]) == int:
+            new_left = [left[i]]
+        if type(right[i]) == int:
+            new_right = [right[i]]
 
-        if type(left[i]) == int and type(right[i]) == list:
-            result = compare([left[i]], right[i])
-            if result != 0:
-                return result
-            continue
-
-        if type(left[i]) == list and type(right[i]) == int:
-            result = compare(left[i], [right[i]])
-            if result != 0:
-                return result
-            continue
+        result = compare(new_left, new_right)
+        if result != 0:
+            return result
 
     # All elements equal: check length
     return 0 if len(left) == len(right) else 1
 
 def part1(filename):
     pairs = read(filename)
-    result = 0
-    for i, (left, right) in enumerate(pairs):
-        if compare(left, right) >= 0:
-            log('{}: {}\n{}\n{}\n'.format(i, True, left, right))
-            result += (i+1)
-        else:
-            log('{}: {}\n{}\n{}\n'.format(i, False, left, right))
-
-    return result
+    return sum(i+1 for i, (left, right) in enumerate(pairs) if compare(left, right) >= 0)
 
 def part2(filename):
     pairs = read(filename)
     packets = [p for pair in pairs for p in pair]
     packets.append([[2]])
     packets.append([[6]])
-    # print('\n'.join(packets))
     sorted_packets = sorted(packets, key=cmp_to_key(compare), reverse=True)
-    # print('\n'.join(sorted_packets))
     idx2 = sorted_packets.index([[2]])
     idx6 = sorted_packets.index([[6]])
     return (idx2+1) * (idx6+1)
