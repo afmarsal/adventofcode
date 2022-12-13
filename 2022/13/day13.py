@@ -13,29 +13,25 @@ def log(param):
 
 
 def compare(left, right):
-    for i in range(len(left)):
-        if i >= len(right):
-            return -1
+    match(left, right):
+        case int(l), int(r):
+            return sign(r - l)
 
-        if type(left[i]) == int and type(right[i]) == int:
-            if left[i] != right[i]:
-                return sign(right[i] - left[i])
-            else:
-                continue
+        case [*l], int(r):
+            return compare(l, [r])
 
-        new_left = left[i]
-        new_right = right[i]
-        if type(left[i]) == int:
-            new_left = [left[i]]
-        if type(right[i]) == int:
-            new_right = [right[i]]
+        case int(l), [*r]:
+            return compare([l], r)
 
-        result = compare(new_left, new_right)
-        if result != 0:
-            return result
+        case [*l], [*r] if len(l) == 0 or len(r) == 0:
+            return sign(len(r) - len(l))
 
-    # All elements equal: check length
-    return 0 if len(left) == len(right) else 1
+        case [l, *lr], [r, *rr]:
+            cmp = compare(l, r)
+            return cmp if cmp != 0 else compare(lr, rr)
+
+        case _:
+            raise Exception("Unkonwn {} {}".format(left, right))
 
 def part1(filename):
     pairs = read(filename)
