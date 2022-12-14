@@ -69,9 +69,8 @@ class Underground:
         total_units = 0
         while True:
             sand_x, sand_y = x_pos, -1
-            pouring = True
             total_units += 1
-            while pouring:
+            while True:
                 sand_y += 1
                 if self.free(sand_x, sand_y + 1):
                     continue
