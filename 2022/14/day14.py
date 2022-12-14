@@ -84,17 +84,13 @@ class Underground:
                 self.sand.add((sand_x, sand_y))
                 if (sand_x, sand_y) == (x_pos, 0):
                     return total_units
-                # self.print(total_units, sand_x, sand_y)
-                # time.sleep(1/10)
                 break
 
-    def print(self, units, sand_x, sand_y):
+    def print(self, units=-1):
         print('units: {}'.format(units))
         for y in range(0, self.max_y + 4):
-            for x in range(self.min_x - 4, self.max_x+4):
-                if (x, y) == (sand_x, sand_y):
-                    char = 'x'
-                elif (x, y) in self.rocks or y == self.floor_y():
+            for x in range(self.min_x - 24, self.max_x+24):
+                if (x, y) in self.rocks or y == self.floor_y():
                     char = '#'
                 else:
                     char = 'o' if (x, y) in self.sand else '.'
@@ -129,4 +125,4 @@ class TestPart2(unittest.TestCase):
         self.assertEqual(93, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(26729, part2('input.txt'))
