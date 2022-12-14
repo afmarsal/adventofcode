@@ -51,6 +51,7 @@ class Underground:
             while pouring:
                 sand_y += 1
                 if sand_y > self.max_y:
+                    self.print(total_units)
                     return total_units - 1
                 if self.free(sand_x, sand_y + 1):
                     continue
@@ -83,6 +84,7 @@ class Underground:
                 # Settle
                 self.sand.add((sand_x, sand_y))
                 if (sand_x, sand_y) == (x_pos, 0):
+                    self.print(total_units)
                     return total_units
                 break
 
@@ -101,7 +103,6 @@ def log(param):
     print(param)
     pass
 
-
 def part1(filename):
     underground = read(filename)
     return underground.pour1(500)
@@ -111,6 +112,8 @@ def part2(filename):
     underground = read(filename)
     return underground.pour2(500)
 
+if __name__ == '__main__':
+    part1('input.txt')
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
