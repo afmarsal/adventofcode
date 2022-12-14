@@ -1,4 +1,5 @@
 import sys
+import time
 import unittest
 from dataclasses import dataclass
 
@@ -36,9 +37,12 @@ class Underground:
     sand: set
 
     def free(self, x, y):
-        return (x,y ) not in self.rocks and (x,y) not in self.sand
+        return (x, y) not in self.rocks and (x, y) not in self.sand and y < self.floor_y()
 
-    def pour(self, x_pos):
+    def floor_y(self):
+        return self.max_y + 2
+
+    def pour1(self, x_pos):
         total_units = 0
         while True:
             sand_x, sand_y = x_pos, 0
@@ -60,10 +64,40 @@ class Underground:
                 self.sand.add((sand_x, sand_y))
                 break
 
-    def print(self):
+    def pour2(self, x_pos):
+        total_units = 0
+        while True:
+            sand_x, sand_y = x_pos, -1
+            pouring = True
+            total_units += 1
+            while pouring:
+                sand_y += 1
+                if self.free(sand_x, sand_y + 1):
+                    continue
+                if self.free(sand_x - 1, sand_y + 1):
+                    sand_x -= 1
+                    continue
+                if self.free(sand_x + 1, sand_y + 1):
+                    sand_x += 1
+                    continue
+                # Settle
+                self.sand.add((sand_x, sand_y))
+                if (sand_x, sand_y) == (x_pos, 0):
+                    return total_units
+                # self.print(total_units, sand_x, sand_y)
+                # time.sleep(1/10)
+                break
+
+    def print(self, units, sand_x, sand_y):
+        print('units: {}'.format(units))
         for y in range(0, self.max_y + 4):
             for x in range(self.min_x - 4, self.max_x+4):
-                char = '#' if (x, y) in self.rocks else 'o' if (x,y) in self.sand else '.'
+                if (x, y) == (sand_x, sand_y):
+                    char = 'x'
+                elif (x, y) in self.rocks or y == self.floor_y():
+                    char = '#'
+                else:
+                    char = 'o' if (x, y) in self.sand else '.'
                 print(char, end='')
             print()
 
@@ -74,12 +108,12 @@ def log(param):
 
 def part1(filename):
     underground = read(filename)
-    underground.print()
-    return underground.pour(500)
+    return underground.pour1(500)
 
 
 def part2(filename):
-    return -1
+    underground = read(filename)
+    return underground.pour2(500)
 
 
 class TestPart1(unittest.TestCase):
