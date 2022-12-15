@@ -102,7 +102,7 @@ def multirange_diff(r1_list, r2_list):
         r1_list = list(itertools.chain(*[range_diff(r1, r2) for r1 in r1_list]))
     return r1_list
 
-def part1(filename, row):
+def count_busy_in_row(filename, row):
     grid = read(filename)
     ranges = []
     total_busy = set()
@@ -111,26 +111,23 @@ def part1(filename, row):
         if r:
             ranges.append(r)
         total_busy.update(busy)
-    log(f'\nRanges: {ranges}\nbusy: {total_busy}')
     result = 0
     counted_ranges = []
     for r in ranges:
         if not r:
             continue
-        log(f'\nHandling range: {r}, cr: {counted_ranges}')
         sub_ranges = multirange_diff([r], counted_ranges)
-        log(f'Subranges without counted:{sub_ranges}')
         sub_ranges = multirange_diff(sub_ranges, total_busy)
-        log(f'Subranges without busy:   {sub_ranges}')
         partial = 0
         for sr in sub_ranges:
             partial += sr[1] - sr[0] + 1
         result += partial
 
         counted_ranges.extend(sub_ranges)
-        log(f'Range: {r}, partial: {partial}, result: {result}')
     return result
 
+def part1(filename, row):
+    return count_busy_in_row(filename, row)
 
 def part2(filename):
     return -1
@@ -140,13 +137,12 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(26, part1('sample.txt', 10))
 
     def test_input(self):
-        # 4587847 too low
-        self.assertEqual(-2, part1('input.txt', 2000000))
+        self.assertEqual(5832528, part1('input.txt', 2000000))
 
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(56000011, part2('sample.txt'))
 
     def test_input(self):
         self.assertEqual(-2, part2('input.txt'))
