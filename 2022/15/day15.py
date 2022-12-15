@@ -9,11 +9,11 @@ def read(filename):
         return [Sensor(x1, y1, x2, y2) for line in f.read().splitlines() for x1, y1, x2, y2 in [list(map(int, re.findall(r'-?\d+', line)))]]
 
 def log(param='', end='\n'):
-    print(param, end=end)
+    # print(param, end=end)
     pass
 
 def log_nolf(param):
-    print(param, end='')
+    # print(param, end='')
     pass
 
 @dataclass
@@ -102,8 +102,7 @@ def multirange_diff(r1_list, r2_list):
         r1_list = list(itertools.chain(*[range_diff(r1, r2) for r1 in r1_list]))
     return r1_list
 
-def count_busy_in_row(filename, row):
-    grid = read(filename)
+def count_busy_in_row(grid, row):
     ranges = []
     total_busy = set()
     for s in grid:
@@ -127,9 +126,32 @@ def count_busy_in_row(filename, row):
     return result
 
 def part1(filename, row):
-    return count_busy_in_row(filename, row)
+    grid = read(filename)
+    return count_busy_in_row(grid, row)
 
-def part2(filename):
+def get_ranges(grid, row):
+    ranges = []
+    total_busy = set()
+    for s in grid:
+        r, busy = s.range_of_points_at(row)
+        if r:
+            ranges.append(r)
+        total_busy.update(busy)
+    return ranges
+
+def part2(filename, max_row):
+    grid = read(filename)
+    for i in range(max_row+1):
+        if i % 1000 == 0:
+            print(f'It: {i}')
+        ranges = get_ranges(grid, i)
+        free_range = multirange_diff([(0, max_row-1)], ranges)
+        if free_range:
+            x = free_range[0][1]
+            y = i
+            log(f'Free range non empty: {free_range}. x={x}, y={y}')
+            return x * 4000000 + y
+        log(f'Free ranges: {free_range}')
     return -1
 
 class TestPart1(unittest.TestCase):
@@ -142,7 +164,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(56000011, part2('sample.txt'))
+        self.assertEqual(56000011, part2('sample.txt', 20))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(13360899249595, part2('input.txt', 4000000))
