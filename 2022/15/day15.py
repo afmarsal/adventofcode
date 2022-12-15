@@ -102,7 +102,8 @@ def multirange_diff(r1_list, r2_list):
         r1_list = list(itertools.chain(*[range_diff(r1, r2) for r1 in r1_list]))
     return r1_list
 
-def count_busy_in_row(grid, row):
+
+def get_row_data(grid, row):
     ranges = []
     total_busy = set()
     for s in grid:
@@ -110,13 +111,17 @@ def count_busy_in_row(grid, row):
         if r:
             ranges.append(r)
         total_busy.update(busy)
+    return ranges, total_busy
+
+def count_busy_in_row(grid, row):
+    ranges, busy = get_row_data(grid, row)
     result = 0
     counted_ranges = []
     for r in ranges:
         if not r:
             continue
         sub_ranges = multirange_diff([r], counted_ranges)
-        sub_ranges = multirange_diff(sub_ranges, total_busy)
+        sub_ranges = multirange_diff(sub_ranges, busy)
         partial = 0
         for sr in sub_ranges:
             partial += sr[1] - sr[0] + 1
@@ -129,30 +134,24 @@ def part1(filename, row):
     grid = read(filename)
     return count_busy_in_row(grid, row)
 
-def get_ranges(grid, row):
-    ranges = []
-    total_busy = set()
-    for s in grid:
-        r, busy = s.range_of_points_at(row)
-        if r:
-            ranges.append(r)
-        total_busy.update(busy)
-    return ranges
-
 def part2(filename, max_row):
+    # Asuming the "single" beacon should be at distance of max dist + 1 of any sensor
     grid = read(filename)
-    for i in range(max_row+1):
-        if i % 1000 == 0:
-            print(f'It: {i}')
-        ranges = get_ranges(grid, i)
-        free_range = multirange_diff([(0, max_row-1)], ranges)
-        if free_range:
-            x = free_range[0][1]
-            y = i
-            log(f'Free range non empty: {free_range}. x={x}, y={y}')
-            return x * 4000000 + y
-        log(f'Free ranges: {free_range}')
-    return -1
+    checked_rows = set()
+    for sensor in grid:
+        min_y = max(0, sensor.pos.y - sensor.radius() - 1)
+        max_y = min(max_row, sensor.pos.y + sensor.radius() + 1)
+        for y in range(min_y, max_y):
+            if y in checked_rows:
+                continue
+            ranges, busy = get_row_data(grid, y)
+            free_range = multirange_diff([(0, max_row)], ranges)
+            free_range = multirange_diff(free_range, busy)
+            if free_range:
+                x = free_range[0][1]
+                log(f'Free range non empty: {free_range}. x={x}, y={y}')
+                return x * 4000000 + y
+            checked_rows.add(y)
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
@@ -168,3 +167,4 @@ class TestPart2(unittest.TestCase):
 
     def test_input(self):
         self.assertEqual(13360899249595, part2('input.txt', 4000000))
+        pass
