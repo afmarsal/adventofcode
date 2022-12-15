@@ -4,8 +4,8 @@ def read(filename):
     with open(filename) as f:
         return f.read().splitlines()
 
-def log(param):
-    print(param)
+def log(param='', end='\n'):
+    print(param, end=end)
     pass
 
 
