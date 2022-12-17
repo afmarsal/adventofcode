@@ -8,6 +8,8 @@ def log(param='', end='\n'):
     print(param, end=end)
     pass
 
+def log_nolf(param):
+    log(param, end='')
 
 def part1(filename):
     return -1
