@@ -101,11 +101,11 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(3068, part1('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part1('input.txt'))
+        self.assertEqual(3102, part1('input.txt'))
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(1514285714288, part2('sample.txt'))
 
     def test_input(self):
         self.assertEqual(-2, part2('input.txt'))
