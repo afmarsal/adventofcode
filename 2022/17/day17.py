@@ -53,47 +53,56 @@ def log_chamber(chamber, piece):
     log('+-------+')
     log()
 
+FLOOR = {(x, 0) for x in range(9)}
+
+def settle_piece(jets, jet_idx, piece, base):
+    if not base:
+        max_y = 0
+    else:
+        max_y = max(y for x, y in base)
+    piece = move_to(piece, 3, max_y + 4)
+    chamber = FLOOR | base.copy()
+    settled = False
+    while not settled:
+        # move left, right
+        jet = jets[jet_idx % len(jets)]
+        jet_idx += 1
+        offset = (1, 0) if jet == '>' else (-1, 0)
+        moved_piece = move(piece, offset)
+        if moved_piece.isdisjoint(chamber) \
+                and all(0 < x < 8 for x, y in moved_piece):
+            piece = moved_piece
+        # move down
+        offset = (0, -1)
+        moved_piece = move(piece, offset)
+        if moved_piece.isdisjoint(chamber):
+            piece = moved_piece
+        else:
+            chamber.update(piece)
+            settled = True
+        # log_chamber(chamber, piece)
+    return jet_idx, chamber
+
+def add_piece(base, piece):
+    pass
+
 def part1(filename):
     jets = read(filename)
-    log(f'jets: {jets}')
+    chamber, pieces = build_chamber()
+
     max_y = 0
     rocks = 2022
-    chamber, pieces = build_chamber()
     jet_idx = 0
+    chamber = set()
     for i in range(rocks):
         piece = pieces[i % len(pieces)]
-        piece = move_to(piece, 3, max_y + 4)
-        # log(f'Start')
-        # log_chamber(chamber, piece)
-        settled = False
-        while not settled:
-            # move left, right
-            # log('Before  move')
-            # log_chamber(chamber, piece)
-            jet = jets[jet_idx % len(jets)]
-            jet_idx += 1
-            offset = (1, 0) if jet == '>' else (-1, 0)
-            moved_piece = move(piece, offset)
-            if moved_piece.isdisjoint(chamber) and all(0 < x < 8 for x, y in moved_piece):
-                piece = moved_piece
-            # log(f'After move 1, offset: {offset}')
-            # log_chamber(chamber, piece)
-            # move down
-            offset = (0, -1)
-            moved_piece = move(piece, offset)
-            if moved_piece.isdisjoint(chamber):
-                piece = moved_piece
-            else:
-                chamber.update(piece)
-                max_y = max(y for x, y in chamber)
-                settled = True
-                # log(f'Settled at: {piece}')
-                # log_chamber(chamber, set())
-            # log(f'After move 2. Settled: {settled}')
+        jet_idx, chamber = settle_piece(jets, jet_idx, piece, chamber)
 
-    return max_y
+    return max(y for x, y in chamber)
 
 def part2(filename):
+    jets = read(filename)
+
     return -1
 
 class TestPart1(unittest.TestCase):
