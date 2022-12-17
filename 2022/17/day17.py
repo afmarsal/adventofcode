@@ -1,8 +1,5 @@
 import unittest
 
-import numpy as np
-
-
 def read(filename):
     with open(filename) as f:
         return f.read().strip()
@@ -22,7 +19,7 @@ def build_chamber():
     piece4 = {(0, 0), (0, 1), (0, 2), (0, 3)}
     piece5 = {(0, 0), (0, 1), (1, 0), (1, 1)}
     pieces = [piece1, piece2, piece3, piece4, piece5]
-    
+
     # wall_left = {(0, y) for y in range(4000)}
     # wall_right = {(8, y) for y in range(4000)}
     chamber = {(x, 0) for x in range(9)}
@@ -37,10 +34,10 @@ def move(piece, offset):
     return set(map(lambda p: (p[0] + offset[0], p[1] + offset[1]), piece))
 
 
-def log_chamber(chamber, piece):
+def log_chamber(chamber, piece=frozenset()):
     max_y = max(y for x, y in chamber) + 6
     for y in range(max_y, 0, -1):
-        log_nolf('|')
+        log_nolf(f'{y:03d} |')
         for x in range(1, 8):
             if (x, y) in piece:
                 char = '@'
@@ -50,7 +47,7 @@ def log_chamber(chamber, piece):
                 char = '.'
             log_nolf(char)
         log('|')
-    log('+-------+')
+    log('    +-------+')
     log()
 
 FLOOR = {(x, 0) for x in range(9)}
@@ -83,21 +80,19 @@ def settle_piece(jets, jet_idx, piece, base):
         # log_chamber(chamber, piece)
     return jet_idx, chamber
 
-def add_piece(base, piece):
-    pass
-
 def part1(filename):
     jets = read(filename)
     chamber, pieces = build_chamber()
 
-    max_y = 0
     rocks = 2022
     jet_idx = 0
     chamber = set()
     for i in range(rocks):
         piece = pieces[i % len(pieces)]
         jet_idx, chamber = settle_piece(jets, jet_idx, piece, chamber)
+        log(f'rock: {i}, jet: {jet_idx % len(jets)}')
 
+    log_chamber(chamber)
     return max(y for x, y in chamber)
 
 def part2(filename):
