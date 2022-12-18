@@ -85,7 +85,7 @@ class TestPart1(unittest.TestCase):
         self.assertEqual(64, part1('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(4332, part2('input.txt'))
+        self.assertEqual(4332, part1('input.txt'))
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
