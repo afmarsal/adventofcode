@@ -18,11 +18,8 @@ def dist(cube1, cube2):
 
 def part1(filename):
     inp = read(filename)
-    connected = 0
-    for i, cube1 in enumerate(inp):
-        for cube2 in inp[i+1:]:
-            if dist(cube1, cube2) == 1:
-                connected += 2
+    # for each pair of connected cube, sum 2 sides that are connected
+    connected = sum(2 for i, cube1 in enumerate(inp) for cube2 in inp[i+1:] if dist(cube1, cube2) == 1)
     return len(inp) * 6 - connected
 
 def add(t1, t2):
