@@ -5,7 +5,7 @@ def read(filename):
         return f.read().strip()
 
 def log(param='', end='\n'):
-    print(param, end=end)
+    # print(param, end=end)
     pass
 
 def log_nolf(param):
@@ -24,10 +24,8 @@ def build_pieces():
 def move_to(piece, x_offset, max_y):
     return set(map(lambda p: (p[0] + x_offset, max_y + p[1]), piece))
 
-
 def move(piece, offset):
     return set(map(lambda p: (p[0] + offset[0], p[1] + offset[1]), piece))
-
 
 def log_chamber(chamber, piece=frozenset()):
     max_y = max(y for x, y in chamber) + 6
@@ -75,13 +73,41 @@ def settle_piece(jets, jet_idx, piece, base):
         # log_chamber(chamber, piece)
     return jet_idx, chamber
 
+def guess_cycle_len(seq):
+    min_cycle_length = 20
+    if len(seq) // 2 <= min_cycle_length:
+        return None, None
+    for x in range(len(seq)//2):
+        cycle_length = min_cycle_length + x
+        if 2 * cycle_length >= len(seq):
+            return None, None
+        if seq[-cycle_length:] == seq[-2 * cycle_length:-cycle_length]:
+            log(f'Seq found. len: {x+min_cycle_length}')
+            return len(seq) - 2*cycle_length, cycle_length
+    return None, None
+
+def find_cycles(jets, pieces):
+    jet_idx = 0
+    chamber = set()
+    jet_idxs = []
+    rock = 0
+    while True:
+        piece = pieces[rock % len(pieces)]
+        jet_idx, chamber = settle_piece(jets, jet_idx, piece, chamber)
+        jet_idxs.append(jet_idx % len(jets))
+        log(f'idx: {rock}, jet: {jet_idx % len(jets)}')
+        cycle_start, cycle_len = guess_cycle_len(jet_idxs)
+        if cycle_start:
+            return cycle_start, cycle_len
+        rock += 1
+
 def calc_height(filename, rocks):
     jets = read(filename)
     pieces = build_pieces()
 
-    cycle_start = 16
-    rocks_in_cycle = 35
     # After cycle_start (16) iterations, there's a cycle of rocks_in_cycle (35)
+    cycle_start, rocks_in_cycle = find_cycles(jets, pieces)
+    cycle_start += 2   # For some reason have to add this small offset to make it work
 
     # Start the first group of rocks
     jet_idx = 0
@@ -138,5 +164,4 @@ class TestPart2(unittest.TestCase):
         self.assertEqual(1514285714288, part2('sample.txt'))
 
     def test_input(self):
-        # 1571428571425 too high
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(1539823008825, part2('input.txt'))
