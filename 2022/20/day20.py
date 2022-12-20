@@ -27,8 +27,8 @@ class Node:
     def __init__(self, pos, num) -> None:
         self.pos = pos
         self.num = num
-        self.prev = None
-        self.nxt = None
+        # self.prev = None
+        # self.nxt = None
 
     def __repr__(self) -> str:
         return f'[{self.pos}]:{self.num}'
@@ -43,46 +43,55 @@ def build_linked_list(original_numbers):
     return result[0]
 
 
-def find_by_pos(i, lst):
-    node = lst
-    while True:
-        if node.pos == i:
-            return node
-        node = node.nxt
+def find_current_pos(numbers, i):
+    for curr_pos, n in enumerate(numbers):
+        if n.pos == i:
+            return curr_pos, n.num
 
-def find_by_num(i, lst):
-    node = lst
-    while True:
-        if node.num == i:
-            return node
-        node = node.nxt
+def find_by_num(numbers, num):
+    for pos, n in enumerate(numbers):
+        if n.num == num:
+            return pos, n
+
+def build_list(numbers):
+    return [Node(i, n) for i, n in enumerate(numbers)]
 
 
 def part1(filename):
     original_numbers = read(filename)
-    lst = build_linked_list(original_numbers)
-    node = lst
+    numbers = build_list(original_numbers)
     for i, n in enumerate(original_numbers):
-        node = find_by_pos(i, node)
-        move = node.num % (len(original_numbers) - 1)
-        for j in range(move):
-            old_next = node.nxt
-            old_prev = node.prev
-            node.nxt = old_next.nxt
-            node.prev = old_next
+        pos, n = find_current_pos(numbers, i)
+        new_pos = (pos + n) % (len(numbers) - 1)
+        if pos == new_pos:
+            continue
+        if pos < new_pos:
+            next_numbers = numbers[0:pos] + numbers[pos + 1:new_pos + 1] + [numbers[pos]] + numbers[new_pos + 1:]
+        else:
+            next_numbers = numbers[0:new_pos] + [numbers[pos]] + numbers[new_pos:pos] + numbers[pos + 1:]
+        # log(f'[{n}]: {numbers} -> {next_numbers}')
+        numbers = next_numbers
+        # if 0 <= i < len(preexisting):
+        #     if numbers != preexisting[i]:
+        #         log(f'{i} Sequences dont match {numbers} != {preexisting[i]}')
+    zero_pos, __ = find_by_num(numbers, 0)
+    # result = 0
+    # for p in 1000, 2000, 3000:
+    #     result += numbers[(zero_pos + p) % len(numbers)]
+    mil_pos = numbers[(zero_pos + 1000) % len(numbers)].num
+    dmil_pos = numbers[(zero_pos + 2000) % len(numbers)].num
+    tmil_pos = numbers[(zero_pos + 3000) % len(numbers)].num
+    log(f'{zero_pos} -> {mil_pos}, {dmil_pos}, {tmil_pos}')
+    result = mil_pos + dmil_pos + tmil_pos
+    return result
 
-            old_next.prev = old_prev
-            old_next.nxt = node
 
-            old_prev.nxt = old_next
-
-        # c = lst
-        # log_nolf(f'{i}-{n} -> ')
-        # for k in range(len(original_numbers)):
-        #     log_nolf(c)
-        #     log_nolf(',')
-        #     c = c.nxt
-        # log()
+def part2(filename):
+    numbers = read(filename)
+    numbers = [n * 811589153 for n in numbers]
+    lst = build_linked_list(numbers)
+    for i in range(10):
+        mix(numbers, lst)
 
     node = find_by_num(0, lst)
     result = 0
@@ -90,15 +99,7 @@ def part1(filename):
         node = node.nxt
         if i % 1000 == 0:
             result += node.num
-    # mil_pos = numbers[(zero_pos + 1000) % len(numbers)]
-    # dmil_pos = numbers[(zero_pos + 2000) % len(numbers)]
-    # tmil_pos = numbers[(zero_pos + 3000) % len(numbers)]
-    # log(f'{zero_pos} -> {mil_pos}, {dmil_pos}, {tmil_pos}')
-    # result = mil_pos + dmil_pos + tmil_pos
     return result
-
-def part2(filename):
-    return -1
 
 
 class TestPart1(unittest.TestCase):
@@ -110,7 +111,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(1623178306, part2('sample.txt'))
 
     def test_input(self):
         self.assertEqual(-2, part2('input.txt'))
