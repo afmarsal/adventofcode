@@ -38,17 +38,10 @@ def mix(original_numbers, numbers):
     for i, n in enumerate(original_numbers):
         pos, n = find_current_pos(numbers, i)
         new_pos = (pos + n) % (len(numbers) - 1)
-        if pos == new_pos:
-            continue
         if pos < new_pos:
-            next_numbers = numbers[0:pos] + numbers[pos + 1:new_pos + 1] + [numbers[pos]] + numbers[new_pos + 1:]
-        else:
-            next_numbers = numbers[0:new_pos] + [numbers[pos]] + numbers[new_pos:pos] + numbers[pos + 1:]
-        # log(f'[{n}]: {numbers} -> {next_numbers}')
-        numbers = next_numbers
-        # if 0 <= i < len(preexisting):
-        #     if numbers != preexisting[i]:
-        #         log(f'{i} Sequences dont match {numbers} != {preexisting[i]}')
+            numbers = numbers[0:pos] + numbers[pos + 1:new_pos + 1] + [numbers[pos]] + numbers[new_pos + 1:]
+        elif pos > new_pos:
+            numbers = numbers[0:new_pos] + [numbers[pos]] + numbers[new_pos:pos] + numbers[pos + 1:]
     return numbers
 
 def part1(filename):
@@ -89,4 +82,4 @@ class TestPart2(unittest.TestCase):
         self.assertEqual(1623178306, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(3390007892081, part2('input.txt'))
