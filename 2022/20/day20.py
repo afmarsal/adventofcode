@@ -13,35 +13,13 @@ def log(param='', end='\n'):
 def log_nolf(param):
     log(param, end='')
 
-preexisting = [
-    [2, 1, -3, 3, -2, 0, 4],
-    [1, -3, 2, 3, -2, 0, 4],
-    [1, 2, 3, -2, -3, 0, 4],
-    [1, 2, -2, -3, 0, 3, 4],
-    [1, 2, -3, 0, 3, 4, -2],
-    [1, 2, -3, 0, 3, 4, -2],
-    [1, 2, -3, 4, 0, 3, -2]
-]
-
 class Node:
     def __init__(self, pos, num) -> None:
         self.pos = pos
         self.num = num
-        # self.prev = None
-        # self.nxt = None
 
     def __repr__(self) -> str:
         return f'[{self.pos}]:{self.num}'
-
-
-def build_linked_list(original_numbers):
-    result = [Node(i, n) for i, n in enumerate(original_numbers)]
-    for i in range(len(result)):
-        result[i].nxt = result[(i+1)%len(result)]
-        result[i].prev = result[(i-1)%len(result)]
-    log(result)
-    return result[0]
-
 
 def find_current_pos(numbers, i):
     for curr_pos, n in enumerate(numbers):
@@ -56,10 +34,7 @@ def find_by_num(numbers, num):
 def build_list(numbers):
     return [Node(i, n) for i, n in enumerate(numbers)]
 
-
-def part1(filename):
-    original_numbers = read(filename)
-    numbers = build_list(original_numbers)
+def mix(original_numbers, numbers):
     for i, n in enumerate(original_numbers):
         pos, n = find_current_pos(numbers, i)
         new_pos = (pos + n) % (len(numbers) - 1)
@@ -74,15 +49,17 @@ def part1(filename):
         # if 0 <= i < len(preexisting):
         #     if numbers != preexisting[i]:
         #         log(f'{i} Sequences dont match {numbers} != {preexisting[i]}')
+    return numbers
+
+def part1(filename):
+    original_numbers = read(filename)
+    numbers = build_list(original_numbers)
+    numbers = mix(original_numbers, numbers)
     zero_pos, __ = find_by_num(numbers, 0)
-    # result = 0
-    # for p in 1000, 2000, 3000:
-    #     result += numbers[(zero_pos + p) % len(numbers)]
-    mil_pos = numbers[(zero_pos + 1000) % len(numbers)].num
-    dmil_pos = numbers[(zero_pos + 2000) % len(numbers)].num
-    tmil_pos = numbers[(zero_pos + 3000) % len(numbers)].num
-    log(f'{zero_pos} -> {mil_pos}, {dmil_pos}, {tmil_pos}')
-    result = mil_pos + dmil_pos + tmil_pos
+    result = 0
+    for i in range(1, 3001):
+        if i % 1000 == 0:
+            result += numbers[(zero_pos + i) % len(numbers)].num
     return result
 
 
