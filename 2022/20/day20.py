@@ -64,18 +64,16 @@ def part1(filename):
 
 
 def part2(filename):
-    numbers = read(filename)
-    numbers = [n * 811589153 for n in numbers]
-    lst = build_linked_list(numbers)
+    original_numbers = read(filename)
+    original_numbers = [n * 811589153 for n in original_numbers]
+    numbers = build_list(original_numbers)
     for i in range(10):
-        mix(numbers, lst)
-
-    node = find_by_num(0, lst)
+        numbers = mix(original_numbers, numbers)
+    zero_pos, __ = find_by_num(numbers, 0)
     result = 0
     for i in range(1, 3001):
-        node = node.nxt
         if i % 1000 == 0:
-            result += node.num
+            result += numbers[(zero_pos + i) % len(numbers)].num
     return result
 
 
