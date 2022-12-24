@@ -59,7 +59,7 @@ def part1(filename):
             # Elf not surrounded
             if all(add(elf_pos, o) not in curr_positions for o in ALL_OFFSETS):
                 log(f'Elf at {elf_pos}: {elf_directions} not moving because its isolated')
-                next_positions[elf_pos] = [(elf_pos, False)]
+                next_positions[elf_pos] = [elf_pos]
                 continue
             for d in elf_directions:
                 log(f'Trying to move elf at {elf_pos} {d}')
@@ -73,20 +73,20 @@ def part1(filename):
                     if new_pos not in next_positions:
                         next_positions[new_pos] = []
                     log(f'Elf at {elf_pos} will move to {new_pos}')
-                    next_positions[new_pos].append((elf_pos, True))
+                    next_positions[new_pos].append(elf_pos)
                     break
             else:
                 # Could not find a new pos to move
                 log(f'Elf at {elf_pos} could not move in any direction')
-                next_positions[elf_pos] = [(elf_pos, True)]
+                next_positions[elf_pos] = [elf_pos]
 
-        for next_pos, data in next_positions.items():
-            if len(data) == 1:
-                original_pos, has_to_move = data[0]
+        for next_pos, original_pos_list in next_positions.items():
+            if len(original_pos_list) == 1:
+                original_pos = original_pos_list[0]
                 next_elves[next_pos] = elves[original_pos][1:] + [elves[original_pos][0]]
             else:
                 log(f'More than one elf at {next_pos}: can\'t move')
-                for original_pos, _ in data:
+                for original_pos in original_pos_list:
                     next_elves[original_pos] = elves[original_pos][1:] + [elves[original_pos][0]]
                     log(f'Updating directions for elf at {original_pos}: {next_elves[original_pos]}')
 
