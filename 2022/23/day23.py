@@ -19,7 +19,7 @@ ALL_OFFSETS = {o for k, v in OFFSETS.items() for o in v}
 DIRECTIONS = ['N', 'S', 'W', 'E']
 
 def log(param='', end='\n'):
-    print(param, end=end)
+    # print(param, end=end)
     pass
 
 def log_nolf(param):
@@ -83,14 +83,7 @@ def part1(filename):
         for next_pos, data in next_positions.items():
             if len(data) == 1:
                 original_pos, has_to_move = data[0]
-                if not has_to_move:
-                    if next_pos != original_pos:
-                        raise Exception(f'Positions {original_pos} and {next_pos} don\'t match!')
-                    next_elves[next_pos] = elves[original_pos][1:] + [elves[original_pos][0]]
-                    log(f'Elf at {original_pos} stays in same pos. Keeping directions: {next_elves[next_pos]}')
-                else:
-                    next_elves[next_pos] = elves[original_pos][1:] + [elves[original_pos][0]]
-                    log(f'Moved elf at {original_pos} to {next_pos}. New directions: {next_elves[next_pos]}')
+                next_elves[next_pos] = elves[original_pos][1:] + [elves[original_pos][0]]
             else:
                 log(f'More than one elf at {next_pos}: can\'t move')
                 for original_pos, _ in data:
