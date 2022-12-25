@@ -74,8 +74,7 @@ def move_blizzard(b_pos, dir, wall_x, wall_y):
                 new_pos = (1, new_pos[1])
     return new_pos
 
-def part1(filename):
-    start, end, wall_x, wall_y, blizzards = read(filename)
+def best_path(start, end, wall_x, wall_y, blizzards):
     elf_pos = {start}
     # print_valley(elf, start, end, wall_x, wall_y, blizzards)
     i = 0
@@ -93,11 +92,13 @@ def part1(filename):
         # Move elf
         next_elf_pos = set()
         for elf in elf_pos:
+            if elf == end:
+                return i - 1, blizzards
             for d in DOWN, RIGHT, UP, LEFT:
                 new_elf = add(elf, d)
                 if new_elf == end:
-                    return i
-                if 1 <= new_elf[0] < wall_x and 1 <= new_elf[1] < wall_y:
+                    next_elf_pos.add(new_elf)
+                elif 1 <= new_elf[0] < wall_x and 1 <= new_elf[1] < wall_y:
                     if new_elf not in all_blizzards:
                         # log(f'Adding way {d} {elf} -> {new_elf}')
                         next_elf_pos.add(new_elf)
@@ -112,8 +113,19 @@ def part1(filename):
         #     log(f'elf at {elf}')
         #     print_valley(elf, start, end, wall_x, wall_y, blizzards)
 
+def part1(filename):
+    start, end, wall_x, wall_y, blizzards = read(filename)
+    round, blizzards = best_path(start, end, wall_x, wall_y, blizzards)
+    return round
+
 def part2(filename):
-    return -1
+    start, end, wall_x, wall_y, blizzards = read(filename)
+    round1, blizzards = best_path(start, end, wall_x, wall_y, blizzards)
+    round2, blizzards = best_path(end, start, wall_x, wall_y, blizzards)
+    round3, blizzards = best_path(start, end, wall_x, wall_y, blizzards)
+    log(f'r1: {round1}, r2: {round2}, r3: {round3}')
+    # round 2 and 3 take 1 more, still don't know why
+    return round1 + (round2 + 1) + (round3 + 1)
 
 
 class TestPart1(unittest.TestCase):
@@ -125,7 +137,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(54, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(785, part2('input.txt'))
