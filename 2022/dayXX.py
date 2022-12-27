@@ -12,6 +12,7 @@ def log_nolf(param):
     log(param, end='')
 
 def part1(filename):
+    scan = read(filename)
     return -1
 
 def part2(filename):
