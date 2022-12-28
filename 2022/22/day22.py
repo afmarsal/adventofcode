@@ -11,7 +11,7 @@ def read(filename):
         return lines
 
 def log(param='', end='\n'):
-    # print(param, end=end)
+    print(param, end=end)
     pass
 
 def log_nolf(param):
@@ -85,24 +85,20 @@ def calc(filename, path, new_pos_func):
             steps = -1
         reading_steps = not reading_steps
         idx += 1
-        log(f'idx: {idx}, rotate: {rotate}, steps: {steps}, pos: {pos_y}, {pos_x}')
 
         match rotate:
             case 'R':
                 dir = DIRECTIONS[(DIRECTIONS.index(dir) + 1) % len(DIRECTIONS)]
-                log(f'New direction: {dir}')
             case 'L':
                 dir = DIRECTIONS[(DIRECTIONS.index(dir) - 1) % len(DIRECTIONS)]
-                log(f'New direction: {dir}')
             case _:
-                log(f'Moving {steps} steps in direction {dir} from {pos_y}, {pos_x}')
                 for s in range(steps):
                     new_y, new_x, new_dir = new_pos_func(pos_y, pos_x, dir)
                     if lines[new_y][new_x] == '#':
                         log(f'Found wall at: {new_y}, {new_x}')
                         break
-                    pos_y, pos_x = new_y, new_x
-                log(f'Moved to {pos_y}, {pos_x}')
+                    pos_y, pos_x, dir = new_y, new_x, new_dir
+                    log(f'Moved to {pos_y}, {pos_x}')
 
     return (pos_y + 1) * 1000 + (pos_x + 1) * 4 + DIRECTIONS.index(dir)
 
@@ -110,20 +106,73 @@ def calc(filename, path, new_pos_func):
 def part1(filename, path):
     return calc(filename, path, new_pos1)
 
-def new_pos2(lines, pos, dir):
-    new_y, new_x = add(pos, dir)
-    if not 0 <= new_y < len(lines) \
-            or not 0 <= new_x < len(lines[0]) \
-            or lines[new_y][new_x] == ' ':
-        if dir == UP:
-            new_y = find_max_y(new_x)
-        elif dir == DOWN:
-            new_y = find_min_y(new_x)
-        elif dir == LEFT:
-            new_x = find_max_x(new_y)
-        elif dir == RIGHT:
-            new_x = find_min_x(new_y)
-    return new_x, new_y, dir
+
+def quadrant(pos_y, pos_x):
+    global lines
+    quad_size = quadrant_size()
+    return pos_y // quad_size, pos_x // quad_size
+
+
+def quadrant_size():
+    global lines
+    return max(len(lines), len(lines[0])) // 4
+
+
+def new_pos2(pos_y, pos_x, dir):
+    global lines
+    global quadrant_mappings
+    new_y, new_x = add((pos_y, pos_x), dir)
+    if quadrant(pos_y, pos_x) != quadrant(new_y, new_x):
+        new_quadrant, new_dir = quadrant_mappings[quadrant(pos_y, pos_x)][dir]
+        rel_y = pos_y % quadrant_size()
+        rel_x = pos_x % quadrant_size()
+        if new_dir == UP:
+            new_rel_y = quadrant_size() - 1
+            if dir == UP:
+                new_rel_x = rel_x
+            elif dir == DOWN:
+                new_rel_x = quadrant_size() - 1 - rel_x
+            elif dir == RIGHT:
+                new_rel_x = quadrant_size() - 1 - rel_y
+            else:
+                new_rel_x = rel_y
+        elif new_dir == DOWN:
+            new_rel_y = 0
+            if dir == UP:
+                new_rel_x = quadrant_size() - 1 - rel_x
+            elif dir == DOWN:
+                new_rel_x = rel_x
+            elif dir == RIGHT:
+                new_rel_x = quadrant_size() - 1 - rel_y
+            else:
+                new_rel_x = quadrant_size() - 1 - rel_y
+        elif new_dir == LEFT:
+            new_rel_x = quadrant_size() - 1
+            if dir == UP:
+                new_rel_y = quadrant_size() - 1 - rel_x
+            elif dir == DOWN:
+                new_rel_y = rel_x
+            elif dir == RIGHT:
+                new_rel_y = quadrant_size() - 1 - rel_y
+            else:
+                new_rel_y = rel_y
+        elif new_dir == RIGHT:
+            new_rel_x = 0
+            if dir == UP:
+                new_rel_y = rel_x
+            elif dir == DOWN:
+                new_rel_y = quadrant_size() - 1 - rel_x
+            elif dir == RIGHT:
+                new_rel_y = rel_y
+            else:
+                new_rel_y = quadrant_size() - 1 - rel_y
+        new_y = new_quadrant[0] * quadrant_size() + new_rel_y
+        new_x = new_quadrant[1] * quadrant_size() + new_rel_x
+        log(f'Moving from\n[{pos_y}, {pos_x}] (rel: {rel_y}, {rel_x}, d: {dir}), q: {quadrant(pos_y, pos_x)}) to \n'
+            f'[{new_y}, {new_x}] (rel: {new_rel_y}, {new_rel_x}] d: {new_dir}, q: {new_quadrant}')
+        return new_y, new_x, new_dir
+
+    return new_y, new_x, dir
 
 def part2(filename, path):
     return calc(filename, path, new_pos2)
@@ -140,16 +189,51 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
+        global quadrant_mappings
+        QUAD_1 = (0, 2)
+        QUAD_2 = (1, 0)
+        QUAD_3 = (1, 1)
+        QUAD_4 = (1, 2)
+        QUAD_5 = (2, 2)
+        QUAD_6 = (2, 3)
         quadrant_mappings = {
-            (0, 2): {
-                UP: (1, 0),
-                DOWN: (1, 2),
-                RIGHT: (2, 3),
-                LEFT: (1, 1)
-            }
-            # (1, 0): {
-            #     UP:
-            # }
+            QUAD_1: {  # QUAD 1
+                # dir: quadrant, new direction
+                UP: (QUAD_2, DOWN),
+                DOWN: (QUAD_4, DOWN),
+                RIGHT: (QUAD_6, LEFT),
+                LEFT: (QUAD_3, DOWN)
+            },
+            QUAD_2: {
+                UP: (QUAD_1, DOWN),
+                DOWN: (QUAD_5, UP),
+                RIGHT: (QUAD_3, RIGHT),
+                LEFT: (QUAD_6, UP),
+            },
+            QUAD_3: {
+                UP: (QUAD_1, RIGHT),
+                DOWN: (QUAD_5, RIGHT),
+                RIGHT: (QUAD_4, RIGHT),
+                LEFT: (QUAD_2, LEFT)
+            },
+            QUAD_4: {
+                UP: (QUAD_1, UP),
+                DOWN: (QUAD_5, DOWN),
+                RIGHT: (QUAD_6, DOWN),
+                LEFT: (QUAD_3, LEFT)
+            },
+            QUAD_5: {
+                UP: (QUAD_4, UP),
+                DOWN: (QUAD_2, UP),
+                RIGHT: (QUAD_6, RIGHT),
+                LEFT: (QUAD_3, UP)
+            },
+            QUAD_6: {
+                UP: (QUAD_4, RIGHT),
+                DOWN: (QUAD_2, RIGHT),
+                RIGHT: (QUAD_1, LEFT),
+                LEFT: (QUAD_5, LEFT)
+            },
 
         }
         self.assertEqual(5031, part2('sample.txt', smp))
