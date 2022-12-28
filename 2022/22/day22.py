@@ -133,9 +133,9 @@ def new_pos2(pos_y, pos_x, dir):
             elif dir == DOWN:
                 new_rel_x = quadrant_size() - 1 - rel_x
             elif dir == RIGHT:
-                new_rel_x = quadrant_size() - 1 - rel_y
-            else:
                 new_rel_x = rel_y
+            else:
+                new_rel_x = quadrant_size() - 1 - rel_y
         elif new_dir == DOWN:
             new_rel_y = 0
             if dir == UP:
@@ -145,7 +145,7 @@ def new_pos2(pos_y, pos_x, dir):
             elif dir == RIGHT:
                 new_rel_x = quadrant_size() - 1 - rel_y
             else:
-                new_rel_x = quadrant_size() - 1 - rel_y
+                new_rel_x = rel_y
         elif new_dir == LEFT:
             new_rel_x = quadrant_size() - 1
             if dir == UP:
@@ -166,6 +166,8 @@ def new_pos2(pos_y, pos_x, dir):
                 new_rel_y = rel_y
             else:
                 new_rel_y = quadrant_size() - 1 - rel_y
+        else:
+            raise Exception('Invalid dir')
         new_y = new_quadrant[0] * quadrant_size() + new_rel_y
         new_x = new_quadrant[1] * quadrant_size() + new_rel_x
         log(f'Moving from\n[{pos_y}, {pos_x}] (rel: {rel_y}, {rel_x}, d: {dir}), q: {quadrant(pos_y, pos_x)}) to \n'
@@ -234,9 +236,54 @@ class TestPart2(unittest.TestCase):
                 RIGHT: (QUAD_1, LEFT),
                 LEFT: (QUAD_5, LEFT)
             },
-
         }
         self.assertEqual(5031, part2('sample.txt', smp))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt', inp))
+        global quadrant_mappings
+        QUAD_1 = (0, 1)
+        QUAD_2 = (0, 2)
+        QUAD_3 = (1, 1)
+        QUAD_4 = (2, 0)
+        QUAD_5 = (2, 1)
+        QUAD_6 = (3, 0)
+        quadrant_mappings = {
+            QUAD_1: {  # QUAD 1
+                # dir: quadrant, new direction
+                UP: (QUAD_6, RIGHT),
+                DOWN: (QUAD_3, DOWN),
+                RIGHT: (QUAD_2, RIGHT),
+                LEFT: (QUAD_4, RIGHT)
+            },
+            QUAD_2: {
+                UP: (QUAD_6, UP),
+                DOWN: (QUAD_3, LEFT),
+                RIGHT: (QUAD_5, LEFT),
+                LEFT: (QUAD_1, LEFT),
+            },
+            QUAD_3: {
+                UP: (QUAD_1, UP),
+                DOWN: (QUAD_5, DOWN),
+                RIGHT: (QUAD_2, UP),
+                LEFT: (QUAD_4, DOWN)
+            },
+            QUAD_4: {
+                UP: (QUAD_3, RIGHT),
+                DOWN: (QUAD_6, DOWN),
+                RIGHT: (QUAD_5, RIGHT),
+                LEFT: (QUAD_1, RIGHT)
+            },
+            QUAD_5: {
+                UP: (QUAD_3, UP),
+                DOWN: (QUAD_6, LEFT),
+                RIGHT: (QUAD_2, LEFT),
+                LEFT: (QUAD_4, LEFT)
+            },
+            QUAD_6: {
+                UP: (QUAD_4, UP),
+                DOWN: (QUAD_2, DOWN),
+                RIGHT: (QUAD_5, UP),
+                LEFT: (QUAD_1, DOWN)
+            },
+        }
+        self.assertEqual(153203, part2('input.txt', inp))
