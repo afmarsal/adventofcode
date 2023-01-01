@@ -6,8 +6,11 @@ def read(filename):
         return f.read().splitlines()
 
 
-first = lambda it: next(iter(it))
-priority = lambda c: ord(c) + 1 - (ord('a') if c.islower() else ord('A') - 26)
+def first(it):
+    return next(iter(it))
+
+def priority(c):
+    return ord(c) + 1 - (ord('a') if c.islower() else ord('A') - 26)
 
 def part1(filename):
     common_char = lambda l: first(set(l[:len(l) // 2]).intersection(l[len(l) // 2:]))
