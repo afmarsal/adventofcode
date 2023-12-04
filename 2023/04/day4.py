@@ -15,30 +15,21 @@ def part1(filename):
     lines = get_lines(filename)
     res = 0
     for line in lines:
-        cards = line.split(':')[1]
-        winners, numbers = cards.split('|')
-        winners = {s.strip() for s in winners.split()}
-        numbers = {s.strip() for s in numbers.split()}
-        print(f'w: {winners}, n: {numbers}')
-        combo = len(winners.intersection(numbers))
-        print(f'c: {combo}')
-        if combo > 0:
-            res += pow(2, combo - 1)
+        winners, numbers = [{n.strip() for n in s.split()} for s in line.split(':')[1].split('|')]
+        common = len(winners & numbers)
+        if common > 0:
+            res += pow(2, common - 1)
     return res
 
 
 def part2(filename):
     lines = get_lines(filename)
-    res = 1
     total_cards = [1] * len(lines)
     for i, line in enumerate(lines):
-        cards = line.split(':')[1]
-        winners, numbers = cards.split('|')
-        winners = {s.strip() for s in winners.split()}
-        numbers = {s.strip() for s in numbers.split()}
-        combo = len(winners.intersection(numbers))
-        print(f'i: {i+1}, w: {winners}, n: {numbers}, c:{combo}')
-        for j in range(i+1, i+1+combo):
+        winners, numbers = [{n.strip() for n in s.split()} for s in line.split(':')[1].split('|')]
+        common = len(winners & numbers)
+        print(f'i: {i+1}, w: {winners}, n: {numbers}, c:{common}')
+        for j in range(i+1, i+1+common):
             total_cards[j] += total_cards[i]
         print(f'tc: {total_cards}')
     return sum(total_cards)
