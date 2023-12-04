@@ -93,7 +93,7 @@ def part2(filename):
 class TestAll(unittest.TestCase):
     def test_part1(self):
         f = 'sample.txt'
-        # self.assertEqual(4361, part1(f))
+        self.assertEqual(4361, part1(f))
         f = 'input.txt'
         self.assertEqual(556367, part1(f))
 
