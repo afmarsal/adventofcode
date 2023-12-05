@@ -4,6 +4,7 @@ import re
 import functools
 import operator as op
 from collections import defaultdict
+from pprint import pprint
 
 def get_lines(filename):
     with open(filename) as f:
