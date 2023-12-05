@@ -1,8 +1,13 @@
 import unittest
+import operator
+import re
+import functools
+import operator as op
+from collections import defaultdict
 
-def read(filename):
+def get_lines(filename):
     with open(filename) as f:
-        return f.read().splitlines()
+        return [l.strip() for l in f.readlines()]
 
 def log(param='', end='\n'):
     print(param, end=end)
@@ -12,7 +17,7 @@ def log_nolf(param):
     log(param, end='')
 
 def part1(filename):
-    scan = read(filename)
+    scan = get_lines(filename)
     return -1
 
 def part2(filename):
