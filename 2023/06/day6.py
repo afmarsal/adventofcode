@@ -25,9 +25,10 @@ def part1(filename):
     for i in range(len(times)):
         ways = 0
         for m in range(times[i]):
-            cur_dist = m * (times[i] - m)
-            ways += 1 if cur_dist > distances[i] else 0
-            log(f'Cur dist: {m} * {times[i] - m} = {cur_dist}. Res: {ways}')
+            ways = sum(1 for m in range(times[i]) if m * (times[i] - m) > distances[i])
+            # cur_dist = m * (times[i] - m)
+            # ways += 1 if cur_dist > distances[i] else 0
+            # log(f'Cur dist: {m} * {times[i] - m} = {cur_dist}. Res: {ways}')
         res *= ways
 
     return res
@@ -37,12 +38,13 @@ def part2(filename):
     time = int(scan[0].split(':')[1].replace(" ", ""))
     distance = int(scan[1].split(':')[1].replace(" ", ""))
 
-    ways = 0
-    for m in range(time):
-        cur_dist = m * (time - m)
-        ways += 1 if cur_dist > distance else 0
+    # ways = 0
+    # for m in range(time):
+    #     cur_dist = m * (time - m)
+    #     ways += 1 if cur_dist > distance else 0
+    # return ways
 
-    return ways
+    return sum(1 for m in range(time) if m * (time - m) > distance)
 
 
 class TestPart1(unittest.TestCase):
