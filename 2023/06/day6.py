@@ -21,7 +21,6 @@ def part1(filename):
     scan = get_lines(filename)
     times = [int(n.strip()) for n in scan[0].split(':')[1].split()]
     distances = [int(n.strip()) for n in scan[1].split(':')[1].split()]
-    pprint(distances)
     res = 1
     for i in range(len(times)):
         ways = 0
@@ -34,7 +33,16 @@ def part1(filename):
     return res
 
 def part2(filename):
-    return -1
+    scan = get_lines(filename)
+    time = int(scan[0].split(':')[1].replace(" ", ""))
+    distance = int(scan[1].split(':')[1].replace(" ", ""))
+
+    ways = 0
+    for m in range(time):
+        cur_dist = m * (time - m)
+        ways += 1 if cur_dist > distance else 0
+
+    return ways
 
 
 class TestPart1(unittest.TestCase):
@@ -46,7 +54,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(71503, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(36530883, part2('input.txt'))
