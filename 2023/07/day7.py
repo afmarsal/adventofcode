@@ -28,7 +28,32 @@ def compute_value(hand, jokers):
     return int(hand.translate(trans), 16)
 
 
-def compute_type(hand, jokers):
+# def compute_type(hand, jokers):
+#     counter = Counter(hand)
+#     if jokers:
+#         most_used_card = counter.most_common(1)[0]
+#         if most_used_card[0] == 'J' and most_used_card[1] < 5:
+#             most_used_card = counter.most_common(2)[1]
+#         hand = hand.replace('J', most_used_card[0])
+#         counter = Counter(hand)
+#     d = sorted(counter.values())
+#     match d:
+#         case[_]:
+#             return 7
+#         case[1, 4]:
+#             return 6
+#         case[2, 3]:
+#             return 5
+#         case[1, 1, 3]:
+#             return 4
+#         case[1, 2, 2]:
+#             return 3
+#         case[1, 1, 1, 2]:
+#             return 2
+#         case _:
+#             return 1
+
+def compute_type2(hand, jokers):
     counter = Counter(hand)
     if jokers:
         most_used_card = counter.most_common(1)[0]
@@ -36,29 +61,15 @@ def compute_type(hand, jokers):
             most_used_card = counter.most_common(2)[1]
         hand = hand.replace('J', most_used_card[0])
         counter = Counter(hand)
-    d = sorted(counter.values())
-    match d:
-        case[_]:
-            return 7
-        case[1, 4]:
-            return 6
-        case[2, 3]:
-            return 5
-        case[1, 1, 3]:
-            return 4
-        case[1, 2, 2]:
-            return 3
-        case[1, 1, 1, 2]:
-            return 2
-        case _:
-            return 1
-
+    # Sequences are sorted lexicographically
+    # This generates lists like [5], [2, 2, 1], etc with freq of cards
+    return list(reversed(sorted(counter.values())))
 
 def calc(filename, jokers):
     scan = get_lines(filename)
-    hands = [l.split() for l in scan]
+    hands = [line.split() for line in scan]
     sorted_hands = sorted(hands, key=lambda x: compute_value(x[0], jokers))
-    sorted_hands = sorted(sorted_hands, key=lambda x: compute_type(x[0], jokers))
+    sorted_hands = sorted(sorted_hands, key=lambda x: compute_type2(x[0], jokers))
     return sum((i + 1) * int(p[1]) for i, p in enumerate(sorted_hands))
 
 
