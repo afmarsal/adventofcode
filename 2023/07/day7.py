@@ -22,9 +22,8 @@ def log_nolf(param):
 
 
 def compute_value(hand, jokers):
-    trans = {'A': 'F', 'K': 'E', 'Q': 'D', 'J': 'C', 'T': 'B'}
-    if jokers:
-        trans['J'] = '1'
+    j_val = '1' if jokers else 'C'
+    trans = {'A': 'F', 'K': 'E', 'Q': 'D', 'J': j_val, 'T': 'B'}
     trans = str.maketrans(trans)
     return int(hand.translate(trans), 16)
 
