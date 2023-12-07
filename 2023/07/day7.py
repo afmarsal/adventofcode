@@ -7,18 +7,6 @@ from collections import defaultdict
 from pprint import pprint
 from collections import Counter
 
-TYPE_WEIGHT = 10000000000000
-HAND_VALUES = {
-    '5k': 7,
-    '4k': 6,
-    'fh': 5,
-    '3k': 4,
-    '2p': 3,
-    '2k': 2,
-    '1k': 1
-}
-
-
 def get_lines(filename):
     with open(filename) as f:
         return [l.strip() for l in f.readlines()]
@@ -33,94 +21,70 @@ def log_nolf(param):
     log(param, end='')
 
 
-def group_hand(hand):
-    dict1 = Counter(hand)
-    res = defaultdict(set)
-    for key, value in dict1.items():
-        res[value].add(key)
-    return res
+def compute_hand1(hand):
+    d = sorted(Counter(hand).values())
+    match d:
+        case[_]:
+            return 7
+        case[1, 4]:
+            return 6
+        case[2, 3]:
+            return 5
+        case[1, 1, 3]:
+            return 4
+        case[1, 2, 2]:
+            return 3
+        case[1, 1, 1, 2]:
+            return 2
+        case _:
+            return 1
 
 
-def compute_hand1(p):
-    hand, grouped_hand, bid = p
-    if 5 in grouped_hand:
-        type = '5k'
-    elif 4 in grouped_hand:
-        type = '4k'
-    elif 3 in grouped_hand and 2 in grouped_hand:
-        type = 'fh'
-    elif 3 in grouped_hand:
-        type = '3k'
-    elif 2 in grouped_hand and len(grouped_hand[2]) == 2:
-        type = '2p'
-    elif 2 in grouped_hand:
-        type = '2k'
-    else:
-        type = '1k'
-    return HAND_VALUES[type] * TYPE_WEIGHT + hand_value(hand, "A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, 2")
+def compute_hand2(hand):
+    pprint(hand)
+    counter = Counter(hand)
+    most_used_card = counter.most_common(1)[0]
+    if most_used_card[0] == 'J' and most_used_card[1] < 5:
+        most_used_card = counter.most_common(2)[1]
+    hand = hand.replace('J', most_used_card[0])
+    counter = Counter(hand)
+    d = sorted(counter.values())
+    match d:
+        case[_]:
+            return 7
+        case[1, 4]:
+            return 6
+        case[2, 3]:
+            return 5
+        case[1, 1, 3]:
+            return 4
+        case[1, 2, 2]:
+            return 3
+        case[1, 1, 1, 2]:
+            return 2
+        case _:
+            return 1
 
 
-def compute_hand2(p):
-    hand, grouped_hand, bid = p
-    if 5 in grouped_hand:
-        type = '5k'
-    elif 4 in grouped_hand:
-        if 'J' in hand:
-            type = '5k'
-        else:
-            type = '4k'
-    elif 3 in grouped_hand and 2 in grouped_hand:
-        if 'J' in hand:
-            type = '5k'
-        else:
-            type = 'fh'
-    elif 3 in grouped_hand:
-        if 'J' in grouped_hand[3] or 'J' in hand:
-            # 3J or 1J
-            type = '4k'
-        else:
-            type = '3k'
-    elif 2 in grouped_hand and len(grouped_hand[2]) == 2:
-        if 'J' in grouped_hand[2]:
-            type = '4k'
-        elif 'J' in hand:
-            type = 'fh'
-        else:
-            type = '2p'
-    elif 2 in grouped_hand:
-        if 'J' in grouped_hand[2] or 'J' in hand:
-            type = '3k'
-        else:
-            type = '2k'
-    else:
-        if 'J' in hand:
-            type = '2k'
-        else:
-            type = '1k'
-    return HAND_VALUES[type] * TYPE_WEIGHT + hand_value(hand, "A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J")
+def hand_value(hand, trans):
+    trans = str.maketrans(trans)
+    return int(hand.translate(trans), 16)
 
 
-def hand_value(hand, order):
-    card_values = {c: i for i, c in enumerate(reversed(order.split(", ")))}
-    hand_value = sum(pow(100, len(hand) - i) * card_values[c] for i, c in enumerate(hand))
-    return hand_value
-
-
-def calc(filename, compute_hand_func):
+def calc(filename, hand_type, trans):
     scan = get_lines(filename)
-    hands = []
-    for i, line in enumerate(scan):
-        hand, bid = line.split()
-        hands.append((hand, group_hand(hand), int(bid)))
-    sorted_hands = sorted(hands, key=lambda x: compute_hand_func(x))
-    return sum((i + 1) * p[2] for i, p in enumerate(sorted_hands))
+    hands = [l.split() for l in scan]
+    sorted_hands = sorted(hands, key=lambda x: hand_value(x[0], trans))
+    sorted_hands = sorted(sorted_hands, key=lambda x: hand_type(x[0]))
+    return sum((i + 1) * int(p[1]) for i, p in enumerate(sorted_hands))
 
 
 def part1(filename):
-    return calc(filename, compute_hand1)
+    return calc(filename, compute_hand1,{'A': 'F', 'K': 'E', 'Q': 'D', 'J': 'C', 'T': 'B'})
+
 
 def part2(filename):
-    return calc(filename, compute_hand2)
+    return calc(filename, compute_hand2, {'A': 'F', 'K': 'E', 'Q': 'D', 'J': '1', 'T': 'B'})
 
 
 class TestPart1(unittest.TestCase):
