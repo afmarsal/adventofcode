@@ -18,13 +18,16 @@ HAND_VALUES = {
     '1k': 1
 }
 
+
 def get_lines(filename):
     with open(filename) as f:
         return [l.strip() for l in f.readlines()]
 
+
 def log(param='', end='\n'):
     print(param, end=end)
     pass
+
 
 def log_nolf(param):
     log(param, end='')
@@ -37,10 +40,6 @@ def group_hand(hand):
         res[value].add(key)
     return res
 
-
-def hand_cards_values1(hand):
-    card_values = {c: i for i, c in enumerate(reversed("A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, 2".split(", ")))}
-    return sum(pow(100, len(hand)-i)*card_values[c] for i, c in enumerate(hand))
 
 def compute_hand1(p):
     hand, grouped_hand, bid = p
@@ -58,21 +57,8 @@ def compute_hand1(p):
         type = '2k'
     else:
         type = '1k'
-    return HAND_VALUES[type] * TYPE_WEIGHT + hand_cards_values1(hand)
+    return HAND_VALUES[type] * TYPE_WEIGHT + hand_value(hand, "A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, 2")
 
-
-def part1(filename):
-    scan = get_lines(filename)
-    hands = []
-    for i, line in enumerate(scan):
-        hand, bid = line.split()
-        hands.append((hand, group_hand(hand), int(bid)))
-    sorted_hands = sorted(hands, key=lambda x: compute_hand1(x))
-    return sum((i+1)*p[2] for i, p in enumerate(sorted_hands))
-
-def hand_cards_values2(hand):
-    card_values = {c: i for i, c in enumerate(reversed("A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J".split(", ")))}
-    return sum(pow(100, len(hand)-i)*card_values[c] for i, c in enumerate(hand))
 
 def compute_hand2(p):
     hand, grouped_hand, bid = p
@@ -111,16 +97,31 @@ def compute_hand2(p):
             type = '2k'
         else:
             type = '1k'
-    return HAND_VALUES[type] * TYPE_WEIGHT + hand_cards_values2(hand)
+    return HAND_VALUES[type] * TYPE_WEIGHT + hand_value(hand, "A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J")
 
-def part2(filename):
+
+def hand_value(hand, order):
+    card_values = {c: i for i, c in enumerate(reversed(order.split(", ")))}
+    hand_value = sum(pow(100, len(hand) - i) * card_values[c] for i, c in enumerate(hand))
+    return hand_value
+
+
+def calc(filename, compute_hand_func):
     scan = get_lines(filename)
     hands = []
     for i, line in enumerate(scan):
         hand, bid = line.split()
         hands.append((hand, group_hand(hand), int(bid)))
-    sorted_hands = sorted(hands, key=lambda x: compute_hand2(x))
-    return sum((i+1)*p[2] for i, p in enumerate(sorted_hands))
+    sorted_hands = sorted(hands, key=lambda x: compute_hand_func(x))
+    return sum((i + 1) * p[2] for i, p in enumerate(sorted_hands))
+
+
+def part1(filename):
+    return calc(filename, compute_hand1)
+
+def part2(filename):
+    return calc(filename, compute_hand2)
+
 
 class TestPart1(unittest.TestCase):
     def test_sample(self):
@@ -128,6 +129,7 @@ class TestPart1(unittest.TestCase):
 
     def test_input(self):
         self.assertEqual(254024898, part1('input.txt'))
+
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
