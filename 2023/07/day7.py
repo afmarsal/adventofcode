@@ -8,7 +8,15 @@ from pprint import pprint
 from collections import Counter
 
 TYPE_WEIGHT = 10000000000000
-
+HAND_VALUES = {
+    '5k': 7,
+    '4k': 6,
+    'fh': 5,
+    '3k': 4,
+    '2p': 3,
+    '2k': 2,
+    '1k': 1
+}
 
 def get_lines(filename):
     with open(filename) as f:
@@ -34,29 +42,37 @@ def hand_cards_values1(hand):
     card_values = {c: i for i, c in enumerate(reversed("A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, 2".split(", ")))}
     return sum(pow(100, len(hand)-i)*card_values[c] for i, c in enumerate(hand))
 
-def hand_cards_values2(hand):
-    card_values = {c: i for i, c in enumerate(reversed("A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J".split(", ")))}
-    return sum(pow(100, len(hand)-i)*card_values[c] for i, c in enumerate(hand))
-
-
 def compute_hand1(p):
     hand, grouped_hand, bid = p
     if 5 in grouped_hand:
-        res = 7 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = '5k'
     elif 4 in grouped_hand:
-        res = 6 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = '4k'
     elif 3 in grouped_hand and 2 in grouped_hand:
-        res = 5 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = 'fh'
     elif 3 in grouped_hand:
-        res = 4 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = '3k'
     elif 2 in grouped_hand and len(grouped_hand[2]) == 2:
-        res = 3 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = '2p'
     elif 2 in grouped_hand:
-        res = 2 * TYPE_WEIGHT + hand_cards_values1(hand)
+        type = '2k'
     else:
-        res = hand_cards_values1(hand)
-    log(f'Evaluated {hand}: {res}')
-    return res
+        type = '1k'
+    return HAND_VALUES[type] * TYPE_WEIGHT + hand_cards_values1(hand)
+
+
+def part1(filename):
+    scan = get_lines(filename)
+    hands = []
+    for i, line in enumerate(scan):
+        hand, bid = line.split()
+        hands.append((hand, group_hand(hand), int(bid)))
+    sorted_hands = sorted(hands, key=lambda x: compute_hand1(x))
+    return sum((i+1)*p[2] for i, p in enumerate(sorted_hands))
+
+def hand_cards_values2(hand):
+    card_values = {c: i for i, c in enumerate(reversed("A, K, Q, T, 9, 8, 7, 6, 5, 4, 3, 2, J".split(", ")))}
+    return sum(pow(100, len(hand)-i)*card_values[c] for i, c in enumerate(hand))
 
 def compute_hand2(p):
     hand, grouped_hand, bid = p
@@ -95,31 +111,7 @@ def compute_hand2(p):
             type = '2k'
         else:
             type = '1k'
-    if type == '5k':
-        res = 7 * TYPE_WEIGHT + hand_cards_values2(hand)
-    elif type == '4k':
-        res = 6 * TYPE_WEIGHT + hand_cards_values2(hand)
-    elif type == 'fh':
-        res = 5 * TYPE_WEIGHT + hand_cards_values2(hand)
-    elif type == '3k':
-        res = 4 * TYPE_WEIGHT + hand_cards_values2(hand)
-    elif type == '2p':
-        res = 3 * TYPE_WEIGHT + hand_cards_values2(hand)
-    elif type == '2k':
-        res = 2 * TYPE_WEIGHT + hand_cards_values2(hand)
-    else:
-        res = hand_cards_values2(hand)
-    log(f'Evaluated {hand}: {res}')
-    return res
-
-def part1(filename):
-    scan = get_lines(filename)
-    hands = []
-    for i, line in enumerate(scan):
-        hand, bid = line.split()
-        hands.append((hand, group_hand(hand), int(bid)))
-    sorted_hands = sorted(hands, key=lambda x: compute_hand1(x))
-    return sum((i+1)*p[2] for i, p in enumerate(sorted_hands))
+    return HAND_VALUES[type] * TYPE_WEIGHT + hand_cards_values2(hand)
 
 def part2(filename):
     scan = get_lines(filename)
@@ -142,4 +134,4 @@ class TestPart2(unittest.TestCase):
         self.assertEqual(5905, part2('sample.txt'))
 
     def test_input(self):
-        self.assertEqual(-2, part2('input.txt'))
+        self.assertEqual(254115617, part2('input.txt'))
