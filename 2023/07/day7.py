@@ -21,33 +21,22 @@ def log_nolf(param):
     log(param, end='')
 
 
-def compute_hand1(hand):
-    d = sorted(Counter(hand).values())
-    match d:
-        case[_]:
-            return 7
-        case[1, 4]:
-            return 6
-        case[2, 3]:
-            return 5
-        case[1, 1, 3]:
-            return 4
-        case[1, 2, 2]:
-            return 3
-        case[1, 1, 1, 2]:
-            return 2
-        case _:
-            return 1
+def compute_value(hand, jokers):
+    trans = {'A': 'F', 'K': 'E', 'Q': 'D', 'J': 'C', 'T': 'B'}
+    if jokers:
+        trans['J'] = '1'
+    trans = str.maketrans(trans)
+    return int(hand.translate(trans), 16)
 
 
-def compute_hand2(hand):
-    pprint(hand)
+def compute_type(hand, jokers):
     counter = Counter(hand)
-    most_used_card = counter.most_common(1)[0]
-    if most_used_card[0] == 'J' and most_used_card[1] < 5:
-        most_used_card = counter.most_common(2)[1]
-    hand = hand.replace('J', most_used_card[0])
-    counter = Counter(hand)
+    if jokers:
+        most_used_card = counter.most_common(1)[0]
+        if most_used_card[0] == 'J' and most_used_card[1] < 5:
+            most_used_card = counter.most_common(2)[1]
+        hand = hand.replace('J', most_used_card[0])
+        counter = Counter(hand)
     d = sorted(counter.values())
     match d:
         case[_]:
@@ -66,25 +55,20 @@ def compute_hand2(hand):
             return 1
 
 
-def hand_value(hand, trans):
-    trans = str.maketrans(trans)
-    return int(hand.translate(trans), 16)
-
-
-def calc(filename, hand_type, trans):
+def calc(filename, jokers):
     scan = get_lines(filename)
     hands = [l.split() for l in scan]
-    sorted_hands = sorted(hands, key=lambda x: hand_value(x[0], trans))
-    sorted_hands = sorted(sorted_hands, key=lambda x: hand_type(x[0]))
+    sorted_hands = sorted(hands, key=lambda x: compute_value(x[0], jokers))
+    sorted_hands = sorted(sorted_hands, key=lambda x: compute_type(x[0], jokers))
     return sum((i + 1) * int(p[1]) for i, p in enumerate(sorted_hands))
 
 
 def part1(filename):
-    return calc(filename, compute_hand1,{'A': 'F', 'K': 'E', 'Q': 'D', 'J': 'C', 'T': 'B'})
+    return calc(filename, False)
 
 
 def part2(filename):
-    return calc(filename, compute_hand2, {'A': 'F', 'K': 'E', 'Q': 'D', 'J': '1', 'T': 'B'})
+    return calc(filename, True)
 
 
 class TestPart1(unittest.TestCase):
