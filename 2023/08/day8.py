@@ -47,8 +47,10 @@ def find_cycle(instructions, nodes, cur_node):
     while True:
         lr = instructions[steps % len(instructions)]
         if cur_node.endswith('Z') and (cur_node, 'lr') in visited:
+            # Find the offset and the cycle
             idx = visited.index((cur_node, 'lr'))
             log(f'Found final node {cur_node}[{lr}] at {idx} cycle: {len(visited)-idx}')
+            # Turns out that the offset is always equals to a cycle!
             return idx, len(visited) - idx
         # log(f'Visited {cur_node}[{lr}] -> {nodes[cur_node][lr]}. Past: {visited}')
         visited.append((cur_node, 'lr'))
