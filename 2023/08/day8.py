@@ -24,7 +24,7 @@ def get_nodes(filename):
     nodes = dict()
     for i, line in enumerate(scan[2:]):
         match = re.match(r'(\w{3}) = \((\w{3}), (\w{3})\)', line)
-        nodes[match[1]] = {'L': match[2], 'R': match[3], 'POS': i - 2}
+        nodes[match[1]] = {'L': match[2], 'R': match[3]}
     return instructions, nodes
 
 
