@@ -59,10 +59,7 @@ def find_cycle(instructions, nodes, cur_node):
 def part2(filename):
     instructions, nodes = get_nodes(filename)
     a_nodes = [node for node in nodes.keys() if node.endswith('A')]
-    cycles = []
-    for a_node in a_nodes:
-        cycles.append(find_cycle(instructions, nodes, a_node))
-    pprint(cycles)
+    cycles = [find_cycle(instructions, nodes, a_node) for a_node in a_nodes]
     lcm = math.lcm(*[p2 for _, p2 in cycles])
 
     return lcm
