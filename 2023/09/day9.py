@@ -24,18 +24,13 @@ def log_nolf(param):
 def next_value(line):
     pyramid = [line]
     while any(pyramid[-1]):
-        log(f'Processing line: {line}')
         nxt_line = []
         for i in range(len(pyramid[-1]) - 1):
             nxt_line.append(pyramid[-1][i + 1] - pyramid[-1][i])
         pyramid.append(nxt_line)
     pyramid.reverse()
-    val = 0
-    for i in range(1, len(pyramid)):
-        log(f'Value: {val}+{pyramid[i][-1]}')
-        val += pyramid[i][-1]
-    log(f'Returning val: {val}')
-    return val
+    # Add last value of each row in pyramid
+    return functools.reduce(lambda x, y: x + y[-1], pyramid, 0)
 
 
 def part1(filename):
