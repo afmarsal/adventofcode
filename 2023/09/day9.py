@@ -24,10 +24,8 @@ def log_nolf(param):
 def next_value(line):
     pyramid = [line]
     while any(pyramid[-1]):
-        nxt_line = []
-        for i in range(len(pyramid[-1]) - 1):
-            nxt_line.append(pyramid[-1][i + 1] - pyramid[-1][i])
-        pyramid.append(nxt_line)
+        # Build next pyramid row
+        pyramid.append([n2 - n1 for n1, n2 in zip(pyramid[-1], pyramid[-1][1:])])
     pyramid.reverse()
     # Add last value of each row in pyramid
     return functools.reduce(lambda x, y: x + y[-1], pyramid, 0)
