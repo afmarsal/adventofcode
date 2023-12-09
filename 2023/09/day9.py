@@ -34,12 +34,15 @@ def next_value(line):
     log(f'Returning val: {val}')
     return val
 
+
 def part1(filename):
     scan = get_lines(filename)
     return sum(next_value(line) for line in scan)
 
 def part2(filename):
-    return -1
+    scan = get_lines(filename)
+    scan = [list(reversed(line)) for line in scan]
+    return sum(next_value(line) for line in scan)
 
 
 class TestPart1(unittest.TestCase):
@@ -51,7 +54,7 @@ class TestPart1(unittest.TestCase):
 
 class TestPart2(unittest.TestCase):
     def test_sample(self):
-        self.assertEqual(-2, part2('sample.txt'))
+        self.assertEqual(2, part2('sample.txt'))
 
     def test_input(self):
         self.assertEqual(-2, part2('input.txt'))
