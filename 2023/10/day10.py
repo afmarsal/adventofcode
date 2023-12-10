@@ -50,17 +50,22 @@ NEXT_DIRECTIONS = {
 def add(p1, p2):
     return p1[0] + p2[0], p1[1] + p2[1]
 
-def part1(filename):
+def parse_grid(filename):
     scan = get_lines(filename)
     grid = dict()
     start = None
     for y, l in enumerate(scan):
         for x, c in enumerate(l):
-            if c == '.':
+            if c not in 'S-|F7JL':
                 continue
             grid[(y, x)] = c
             if c == 'S':
                 start = (y, x)
+    return grid, start, len(scan), len(scan[0])
+
+
+def part1(filename):
+    grid, start, max_y, max_x = parse_grid(filename)
     for dir in [(-1, 0), (0, -1), (0, 1), (1, 0)]:
         if add(start, dir) not in grid:
             continue
@@ -79,6 +84,7 @@ def part1(filename):
         log(path)
         return len(path) // 2
     return -1
+
 
 def part2(filename):
     return -1
