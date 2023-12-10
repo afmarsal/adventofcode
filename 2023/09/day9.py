@@ -25,7 +25,7 @@ def next_value(line):
     pyramid = [line]
     while any(pyramid[-1]):
         # Build next pyramid row
-        pyramid.append([n2 - n1 for n1, n2 in zip(pyramid[-1], pyramid[-1][1:])])
+        pyramid += [[n2 - n1 for n1, n2 in zip(pyramid[-1], pyramid[-1][1:])]]
     pyramid.reverse()
     # Add last value of each row in pyramid
     return functools.reduce(lambda x, y: x + y[-1], pyramid, 0)
